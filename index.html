@@ -1,0 +1,210 @@
+<!-- Based on http://bl.ocks.org/dbuezas/9306799 example -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+/*html { height:100%; width: 100%;}*/
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  width: 1900px;
+  height: 850px;
+  position: relative;
+  font-size:10px;
+}
+
+svg {
+	width: 100%;
+	height: 100%;
+}
+
+path.slice{
+	stroke-width:.5px;
+	stroke: #333;
+}
+
+polyline{
+	opacity: .3;
+	stroke: black;
+	stroke-width: 2px;
+	fill: none;
+}
+text { font-size: 20pt; }
+g.label-box { display:none; }
+g.label-box.active { display:block; }
+
+g.chordsBox:hover path.fade {
+  display: none;
+}
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="js/names.js"></script>
+
+<script>
+var svg = d3.select("body")
+	.append("svg");
+
+svg.append("g")
+	.attr("class", "chordsBox");
+svg.append("g")
+	.attr("class", "pieSliceBox");
+
+var page = d3.select('body').node().getBoundingClientRect();
+
+var width = 750,
+    height = 750,
+	radius = Math.min(width, height) / 2;
+
+var innerPieRadius = radius*.9;
+var outerTextRadius = radius*1.2;
+
+var pie = d3.layout.pie()
+	.sort(null)
+	.value(function(d) {
+		return d.value;
+	});
+	
+
+var arc = d3.svg.arc()
+	.outerRadius(radius)
+	.innerRadius(innerPieRadius);
+
+var textArc = d3.svg.arc()
+	.innerRadius(radius)
+	.outerRadius(outerTextRadius);
+	
+var outsideArc = d3.svg.arc()
+	.outerRadius(radius)
+	.innerRadius(radius);
+	
+var layout = d3.layout.chord()
+    .padding(.04)
+    /*.sortSubgroups(d3.descending)
+    .sortChords(d3.ascending);*/
+
+var path = d3.svg.chord()
+    .radius(radius);
+	
+/*var line = d3.svg.line.radial()
+    .interpolate("bundle")
+    .tension(.85)
+    .radius(function(d) { return d.y; })
+    .angle(function(d) { return d.x / 180 * Math.PI; });
+	
+var line = d3.svg.line()
+    .x(function(d) { return d.x; })
+    .y(function(d) { return d.y; })
+    .interpolate("basis");*/
+	
+var matrixData = [];
+
+svg.attr("transform", "translate(" + (page.width - width)/2 + "," + (page.height-height)/ 2 + ")");
+svg.select('g.chordsBox').attr("transform", "translate(" + radius + ", " + radius + ")");
+
+var key = function(d){ return d.data.label; };
+
+var dataLength = 300;
+
+function getData (){
+	var labels = marvelNames.slice(0, dataLength);
+	dataLength = labels.length;
+	return labels.map(function(label){
+		return { label: label, value: 1 }
+	});
+}
+
+function generateRandomMatrix() {	
+	for (var i = 0; i < dataLength; i++) {
+		var matrixRow = [];
+		for (var j = 0; j < dataLength; j++) {
+			if (Math.floor(Math.random()*300) == 199) {
+				matrixRow[j] = .1;
+			} else {
+				matrixRow[j] = 0;	
+			}
+		}
+		matrixData.push(matrixRow);
+	}
+}
+
+generateRandomMatrix();
+change(getData());
+
+function change(data) {
+	//console.log(data);
+
+	/* ------- PIE SLICES -------*/
+	var sliceParents = svg.select('g.pieSliceBox').selectAll("g")
+		.data(pie(data), key)
+		.enter()
+		.append("g")
+		.attr("transform", "translate(" + radius + ", " + radius + ")");
+
+	sliceParents.append("path")
+		.attr('d', arc)
+		//.attr('title', key)
+		.style("fill", function(d) { 
+			var val = Math.random();
+			if (val > .5)
+				return '#4f649d';
+			else
+				return '#d72829';		
+			//return  color(d.data.label); 
+		
+		})
+		.attr("class", "slice");
+
+	var slices = svg.selectAll('.slice');
+	
+	slices.on('mouseover', function(d){
+    	var nodeSelection = d3.select(this.parentNode);
+    	nodeSelection.select(".label-box").classed('active', true);
+	})
+	
+	slices.on('mouseout', function(d){
+    	var nodeSelection = d3.select(this.parentNode);
+    	nodeSelection.select(".label-box").classed('active', false);
+	})
+
+	/* ------- TEXT LABELS -------*/
+	var labelBoxes = sliceParents.append('g').classed('label-box', true);
+	labelBoxes.append("text")
+		.attr("transform", function(d) {
+			return "translate(" + textArc.centroid(d) + ")";
+		})
+		.attr("text-anchor", function(d, i) {
+			if (i < dataLength/2)
+				return "start";	
+			else
+			 return "end"; 
+		})
+		.text(function(d) {
+			return d.data.label;
+		});
+
+	labelBoxes.append("polyline")
+	.attr("points", function(d) {
+		return [outsideArc.centroid(d), textArc.centroid(d)];		
+	})
+	
+	console.log(matrixData);
+	
+	layout.matrix(matrixData);
+	var chord = svg.select('g.chordsBox').selectAll(".chord")
+		.data(layout.chords)
+		.enter().append("path")
+		.attr("class", "chord")
+		.style("fill", function(d) { return '#333' })
+		.attr("d", path)
+		.on("mouseover", function (d, i) {
+			chord.classed("fade", function(p) {
+      			return p.source.index != i
+          		&& p.target.index != i;
+   		  	})
+		})
+	
+};
+
+</script>
+</body>
