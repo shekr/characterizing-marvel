@@ -23,7 +23,7 @@ var width = 750,
 
 var innerPieRadius = radius*.9;
 var outerTextRadius = radius*1.2;
-var innerArcLineRadius = radius*.7;
+var innerArcLineRadius = radius*.8;
 
 var pie = d3.layout.pie()
 	.sort(null)
@@ -55,8 +55,8 @@ var insideArcLineArc = d3.svg.arc()
 var arcLine = d3.svg.line()
     .x(function(d) { return d[0] })
     .y(function(d) { return d[1]; })
-    .interpolate("basis")
-	.tension(.5);
+    .interpolate("bundle")
+	.tension(.7);
 	
 svg.attr("transform", "translate(" + (page.width - width)/2 + "," + (page.height-height)/ 2 + ")");
 svg.select('g.chordsBox').attr("transform", "translate(" + radius + ", " + radius + ")");
@@ -94,7 +94,30 @@ function getClassName(nameString) {
 	return nameString.replace(/[ '\-()\.]+/g, "");
 }
 
-updateData(getData(), connections);
+var initData = getData();
+//create some random connection data
+var connectionsRandom = [];
+var connectionTypes = ["family", "standard", "kill"];
+for (var i = 0; i < dataLength; i++) {
+	for (var j = 0; j <	dataLength; j++) {
+		var valR = Math.floor(Math.random()*dataLength);
+		if (valR % 200 == 0) {
+			var charConnections = {};
+			charConnections.id1 = marvelNames[i];
+			var indexR = Math.floor(Math.random()*dataLength);
+			charConnections.id2 = marvelNames[indexR];
+			var indexConn = Math.floor(Math.random()*connectionTypes.length);
+			charConnections.type = connectionTypes[indexConn];
+			connectionsRandom.push(charConnections);	
+		}
+	}
+}
+
+console.log(connectionsRandom);
+
+updateData(initData, connectionsRandom);
+
+
 
 function updateData(data, connections) {
 	
@@ -104,14 +127,14 @@ function updateData(data, connections) {
 		.enter()
 		.append("g")
 		.attr("transform", "translate(" + radius + ", " + radius + ")")
-		.attr("class", function(d, i) {
-			return "slice-" + getClassName(d.data.label);
+		.attr("id", function(d, i) {
+			return "sliceGroup-" + getClassName(d.data.label);
 		});
 
 	sliceParents.append("path")
 		.attr('d', arc)
 		//.attr('title', key)
-		.style("fill", function(d) { 
+		.attr("fill", function(d) { 
 			var val = Math.random();
 			if (val > .5)
 				return '#4f649d';
@@ -122,29 +145,57 @@ function updateData(data, connections) {
 		})
 		.attr("class", "slice");
 
-	var slices = svg.selectAll('.slice');
+	/** EVENTS **/
+	var slices = svg.select('g.pieSliceBox').selectAll('g');
 	
 	slices.on('mouseover', function(d){
 		//slice and label
-		d3.select(this).classed('active', true);
-    	var nodeSelection = d3.select(this.parentNode);
-    	nodeSelection.select(".label-box").classed('active', true);
-		
-		//arcs
-		var arcID = nodeSelection.attr("class").replace('slice-', '');
-		svg.select('g.arcGroup-' + arcID).classed('active', true);
-		
+		var nodeSelection = d3.select(this);
+		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
+		nodeSelection.classed('active', true);
+		svg.select('g.chordsBox').selectAll('.chord-' + charID).classed('active', true); //chords		
 	})
 	
 	slices.on('mouseout', function(d){
 		//slice and label
-		d3.select(this).classed('active', false);
-    	var nodeSelection = d3.select(this.parentNode);
-    	nodeSelection.select(".label-box").classed('active', false);
-		
-		//arcs
-		var arcID = nodeSelection.attr("class").replace('slice-', '');
-		svg.select('g.arcGroup-' + arcID).classed('active', false);
+    	var nodeSelection = d3.select(this);
+		nodeSelection.classed('active', false);
+		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
+		svg.select('g.chordsBox').selectAll('.chord-' + charID).classed('active', false); //chords
+
+	})
+	
+	slices.on('click', function(d){
+		var nodeSelection = d3.select(this);
+		var selectedState = nodeSelection.classed('selected');
+		var coreState = nodeSelection.classed('core');
+		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
+		console.log(charID);
+		//turn all selected off
+		slices.classed('selected', false);
+		svg.select('.chordsBox').selectAll('path').classed('selected', false).classed('core-selected', false);
+		svg.selectAll('g.selected-connection').classed('selected-connection', false);
+		if (coreState) {
+			//turn all selection off
+			nodeSelection.classed('core', false);
+		}
+		else {
+			if (selectedState) {
+				//turn core on	
+				nodeSelection.classed('core', true);
+				nodeSelection.classed('selected', true);
+				svg.select('g.chordsBox').selectAll('.core.chord-' + charID).classed('core-selected', true).each(function(nodeData) {
+					var connectedCharID = getClassName(nodeData.id1) == charID ? getClassName(nodeData.id2) : getClassName(nodeData.id1)
+					svg.select('#sliceGroup-' + connectedCharID).classed('selected-connection', true);
+				}); //chords
+				
+			}
+			else {
+				//turn selected on	
+				nodeSelection.classed('selected', true);
+				svg.select('g.chordsBox').selectAll('.chord-' + charID).classed('selected', true); //chords
+			}
+		}
 	})
 
 	/* ------- TEXT LABELS -------*/
@@ -168,40 +219,50 @@ function updateData(data, connections) {
 		return [outsideArc.centroid(d), textArc.centroid(d)];		
 	})
 	
-	/* ----- ARCS -------*/
+	/* ----- CHORDS -------*/
 	//console.log(connections);
-	var arcGroups = svg.select('g.chordsBox').selectAll("g")
+	/*var chordGroups = svg.select('g.chordsBox').selectAll("g")
 		.data(connections)
 		.enter()
 		.append("g")
-		.attr("class", function(d) {
-			return "arcGroup-" + getClassName(d.name);
-		})
+		.attr("id", function(d) {
+			return "chordGroup-" + getClassName(d.name);
+		})*/
 		
-	var arcs = arcGroups.selectAll("path")
-		.data(function(d) {
-			//only create paths for slices that exist in curr view
-			var existingConnections = [];
-			for (var j = 0; j < d.links.length; j++) {
-				//console.log(svg.select('g.slice-' + getClassName(d.links[j])).size());
-				if (svg.select('g.slice-' + getClassName(d.links[j])).size() > 0) {
-					existingConnections.push(d.links[j]);
-				}
-			}
-			return existingConnections;
-		})
+	//only create paths for slices that exist in curr view and don't exist already
+	var existingConnections = [];
+	for (var j = 0; j < connections.length; j++) {
+		var slice1ID = getClassName(connections[j].id1);
+		var slice2ID =  getClassName(connections[j].id2);
+		var slice1 = svg.select('#sliceGroup-' + slice1ID);
+		var slice2 = svg.select('#sliceGroup-' + slice2ID);
+		if (slice1.size() + slice2.size() > 1) {
+			existingConnections.push(connections[j]);
+		}
+	}
+		
+	var chords = svg.select('g.chordsBox').selectAll("path")
+		.data(existingConnections)
 		.enter()
 		.append("path")
 		.attr("d", function(d) {
-			var startSliceData = svg.select('g.slice-' + getClassName(d3.select(this.parentNode).datum().name)).datum();
-			var endSliceData = svg.select('g.slice-'  + getClassName(d)).datum();
+			//console.log(svg.select('g.chordsBox path.chord-' + getClassName(d.id1) + '.chord-' + getClassName(d.id2)).size());
+			var startSliceData = svg.select('#sliceGroup-' + getClassName(d.id1)).datum();
+			var endSliceData = svg.select('#sliceGroup-'  + getClassName(d.id2)).datum();
 			var midPoint = [];
 			var startPoint = insideArc.centroid(startSliceData);
 			var startBuffer = insideArcLineArc.centroid(startSliceData);
+			var endBuffer = insideArcLineArc.centroid(endSliceData);
 			var endPoint = insideArc.centroid(endSliceData);
-			midPoint[0] = (endPoint[0] + startBuffer[0])/2;
-			midPoint[1] = (endPoint[1] + startBuffer[1])/2;	
-			return arcLine([startPoint, startBuffer, midPoint, endPoint]);			
+			midPoint[0] = (endBuffer[0] + startBuffer[0])/2;
+			midPoint[1] = (endBuffer[1] + startBuffer[1])/2;	
+			return arcLine([startPoint, startBuffer, midPoint, endBuffer, endPoint]);			
+		})
+		.attr("class", function(d) {
+			var classes = 'chord-'+getClassName(d.id1) + ' ' + 'chord-'+getClassName(d.id2)
+			if (d.type != "standard")
+				classes += ' core';
+			return classes;
 		})
 	
 };

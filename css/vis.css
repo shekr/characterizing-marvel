@@ -13,28 +13,23 @@ svg {
 }
 
 path.slice{
-	stroke-width:.5px;
-	stroke: #333;
+	/*stroke-width:.5px;
+	stroke: #333;*/
 }
 
-path.slice.active {
-	stroke: #f5ee31;
-	stroke-width: 3px;
-}
+.active path.slice, .selected path.slice  { fill: #f5ee31 !important; }
+.selected-connection path.slice { stroke: #f5ee31; stroke-width: 2px; }
 
-polyline{
-	opacity: .3;
-	stroke: black;
+g.label-box { display:none; }
+.active g.label-box, .selected g.label-box, .selected-connection g.label-box { display:block; }
+polyline {
+	opacity: .5;
+	stroke: #666;
 	stroke-width: 2px;
 	fill: none;
 }
 text { font-size: 20pt; }
-g.label-box { display:none; }
-g.label-box.active { display:block; }
 
-g.chordsBox:hover path.fade {
-  display: none;
-}
 g.chordsBox path {
 	stroke: #666;
 	opacity: .5;
@@ -43,5 +38,7 @@ g.chordsBox path {
 	display:none;
 }
 
-g.chordsBox g.active path { display:block; }
+g.chordsBox path.active, g.chordsBox path.selected, g.chordsBox path.core-selected { display:block; }
+g.chordsBox path.selected { stroke: #000; opacity: .8; }
+g.chordsBox path.core-selected { stroke: #7B38CF; opacity: .8; }
 
