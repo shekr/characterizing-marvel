@@ -1,42 +1,7 @@
 <!-- Based on http://bl.ocks.org/dbuezas/9306799 example -->
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style>
-/*html { height:100%; width: 100%;}*/
-
-body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  width: 1900px;
-  height: 850px;
-  position: relative;
-  font-size:10px;
-}
-
-svg {
-	width: 100%;
-	height: 100%;
-}
-
-path.slice{
-	stroke-width:.5px;
-	stroke: #333;
-}
-
-polyline{
-	opacity: .3;
-	stroke: black;
-	stroke-width: 2px;
-	fill: none;
-}
-text { font-size: 20pt; }
-g.label-box { display:none; }
-g.label-box.active { display:block; }
-
-g.chordsBox:hover path.fade {
-  display: none;
-}
-
-</style>
+<link type="text/css" rel="stylesheet" href="css/vis.css" />
 <body>
 <script src="http://d3js.org/d3.v3.js"></script>
 <script src="js/names.js"></script>
@@ -58,6 +23,7 @@ var width = 750,
 
 var innerPieRadius = radius*.9;
 var outerTextRadius = radius*1.2;
+var innerArcLineRadius = radius*.7;
 
 var pie = d3.layout.pie()
 	.sort(null)
@@ -82,18 +48,16 @@ var insideArc = d3.svg.arc()
 	.outerRadius(innerPieRadius)
 	.innerRadius(innerPieRadius);
 	
-/*var arcLine = d3.svg.line.radial()
-    .interpolate("bundle")
-    .tension(.85)
-    .radius(function(d) { return d[0]; })
-    .angle(function(d) { return d[1] / 180 * Math.PI; });*/
+var insideArcLineArc = d3.svg.arc()
+	.outerRadius(innerArcLineRadius)
+	.innerRadius(innerArcLineRadius);
 	
 var arcLine = d3.svg.line()
     .x(function(d) { return d[0] })
     .y(function(d) { return d[1]; })
-    .interpolate("basis-open");
+    .interpolate("basis")
+	.tension(.5);
 	
-
 svg.attr("transform", "translate(" + (page.width - width)/2 + "," + (page.height-height)/ 2 + ")");
 svg.select('g.chordsBox').attr("transform", "translate(" + radius + ", " + radius + ")");
 
@@ -133,8 +97,6 @@ function getClassName(nameString) {
 updateData(getData(), connections);
 
 function updateData(data, connections) {
-	//console.log(data);
-	//console.log(pie(data));
 	
 	/* ------- PIE SLICES -------*/
 	var sliceParents = svg.select('g.pieSliceBox').selectAll("g")
@@ -143,7 +105,7 @@ function updateData(data, connections) {
 		.append("g")
 		.attr("transform", "translate(" + radius + ", " + radius + ")")
 		.attr("class", function(d, i) {
-			return "slice-" + getClassName(d.data.label) + " index-" + i;
+			return "slice-" + getClassName(d.data.label);
 		});
 
 	sliceParents.append("path")
@@ -163,13 +125,26 @@ function updateData(data, connections) {
 	var slices = svg.selectAll('.slice');
 	
 	slices.on('mouseover', function(d){
+		//slice and label
+		d3.select(this).classed('active', true);
     	var nodeSelection = d3.select(this.parentNode);
     	nodeSelection.select(".label-box").classed('active', true);
+		
+		//arcs
+		var arcID = nodeSelection.attr("class").replace('slice-', '');
+		svg.select('g.arcGroup-' + arcID).classed('active', true);
+		
 	})
 	
 	slices.on('mouseout', function(d){
+		//slice and label
+		d3.select(this).classed('active', false);
     	var nodeSelection = d3.select(this.parentNode);
     	nodeSelection.select(".label-box").classed('active', false);
+		
+		//arcs
+		var arcID = nodeSelection.attr("class").replace('slice-', '');
+		svg.select('g.arcGroup-' + arcID).classed('active', false);
 	})
 
 	/* ------- TEXT LABELS -------*/
@@ -217,27 +192,17 @@ function updateData(data, connections) {
 		})
 		.enter()
 		.append("path")
-		.style("stroke", function(d) { return '#333' })
 		.attr("d", function(d) {
-			//console.log(d);
-			//console.log(d3.select(this.parentNode).datum().name);
 			var startSliceData = svg.select('g.slice-' + getClassName(d3.select(this.parentNode).datum().name)).datum();
 			var endSliceData = svg.select('g.slice-'  + getClassName(d)).datum();
-			//console.log(insideArc.centroid(startSliceData));
-			
-			return arcLine([insideArc.centroid(startSliceData), insideArc.centroid(endSliceData)]);
-			
-			//var currSliceData = svg.select('g.slice-' + getClassName(d.name));
-			//return currSlice.size();
+			var midPoint = [];
+			var startPoint = insideArc.centroid(startSliceData);
+			var startBuffer = insideArcLineArc.centroid(startSliceData);
+			var endPoint = insideArc.centroid(endSliceData);
+			midPoint[0] = (endPoint[0] + startBuffer[0])/2;
+			midPoint[1] = (endPoint[1] + startBuffer[1])/2;	
+			return arcLine([startPoint, startBuffer, midPoint, endPoint]);			
 		})
-		.on("mouseover", function (d, i) {
-			chord.classed("fade", function(p) {
-      			return p.source.index != i
-          		&& p.target.index != i;
-   		  	})
-		})
-	
-
 	
 };
 
