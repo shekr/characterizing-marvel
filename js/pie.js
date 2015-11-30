@@ -92,7 +92,9 @@ function updatePieData(data, connections) {
 		var nodeSelection = d3.select(this);
 		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
 		nodeSelection.classed('active', true);
-		svg.select('g.chordsBox').selectAll('.chord-' + charID).classed('active', true); //chords		
+		svg.select('g.chordsBox').selectAll('.chord-' + charID).classed('active', true); //chords
+		populateDetailCard(nodeSelection.datum().data);	
+		d3.select('#vis-detail').classed('viewable', true);
 	})
 	
 	slices.on('mouseout', function(d){
@@ -101,7 +103,12 @@ function updatePieData(data, connections) {
 		nodeSelection.classed('active', false);
 		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
 		svg.select('g.chordsBox').selectAll('.chord-' + charID).classed('active', false); //chords
-
+		selectC = svg.select('#pieBox g.selected');
+		if (selectC.size() > 0) {
+			populateDetailCard(selectC.datum().data);
+		} else {
+			d3.select('#vis-detail').classed('viewable', false);
+		}
 	})
 	
 	slices.on('click', function(d){

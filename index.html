@@ -10,16 +10,36 @@
 </div>
 
 <div id="vis-detail" class="component">
-<p>Detail Pane</p>
+    <div id="detail-head">
+        <div id="title-box">
+            <h3 id="detail-title"></h3>
+            <h4 id="detail-alias">AKA: <span></span></h4>
+        </div>
+        <img id="detail-image" alt="character image" />
+    </div>
+    <table id="detail-table">
+    	<tr><th>Affiliation(s)</th><td id="detail-affil"></td></tr>
+    	<tr><th># Appearances</th><td id="detail-appear"></td></tr>
+        <tr><th>Consommation</th><td id="detail-consomm"></td></tr>
+        <tr><th>Gender</th><td id="detail-gender"></td></tr>
+        <tr><th>Nationality</th><td id="detail-nat"></td></tr>
+        <tr><th>Power(s)</th><td id="detail-power"></td></tr>
+        <tr><th>Introduced</th><td id="detail-year"></td></tr>
+        <tr id="detail-connections"><th>Connections</th><td></td></tr>
+    </table>
+    <p id="detail-read-more"><a href="">Read more on Wikia</a></p>
 </div>
 
 <div id="vis-chart" class="component">
 </div>
-<!--<script src="http://d3js.org/d3.v3.js"></script>-->
-<script src="../js/d3.min.js"></script>
+<script src="http://d3js.org/d3.v3.js"></script>
+<!--<script src="../js/d3.min.js"></script>
+<script src="../js/jquery.min.js"></script>-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="js/fake-data.js"></script>
 <script src="js/global.js"></script>
 <!-- COMPONENT SCRIPTS COME AFTER GLOBAL.JS -->
 <script src="js/pie.js"></script>
+<script src="js/detail.js"></script>
 
 </body>
