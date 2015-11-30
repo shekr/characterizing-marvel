@@ -74,7 +74,6 @@ function updatePieData(data, connections) {
 		.data(pie(data), pieKey)
 		.enter()
 		.append("g")
-		//.attr("transform", "translate(" + radius + ", " + radius + ")")
 		.attr("id", function(d) {
 			//console.log(d);
 			return "sliceGroup-" + d.data.cid;
@@ -181,9 +180,6 @@ function updatePieData(data, connections) {
 	})
 	
 	labelBoxes.append("text")
-		/*.attr("transform", function(d) {
-			return "translate(" + textArc.centroid(d) + ")";
-		})*/
 		.attr("text-anchor", function(d, i) {
 			if (i < dataLength/2)
 				return "start";	

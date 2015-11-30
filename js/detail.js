@@ -3,7 +3,9 @@ function populateDetailCard(fChar) {
 	//TODO: update this with actual call when API integrated
 	var details = characterDetailData;
 	$('#vis-detail #detail-title').text(fChar.name);
-	$('#vis-detail #detail-alias span').text(details.aliases.join(", "));
+	$('#vis-detail #title-box h4').remove();
+	if (details.aliases != null && details.aliases != "" && details.aliases.length > 0)
+		$('#vis-detail #title-box').append('<h4>'+details.aliases.join(", ")+'</h4>');		
 	$('#vis-detail #detail-image').attr('src', 'img/' + fChar.image);
 	$('#vis-detail #detail-affil').text(details.affiliation.join(", "));
 	$('#vis-detail #detail-appear').text(fChar.appearances)

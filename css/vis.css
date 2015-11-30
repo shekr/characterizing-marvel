@@ -12,7 +12,7 @@ body {
 }
 .component { float:left; }
 
-/** CIRCULAR STYLES **/
+/** PIE STYLES **/
 #vis-pie {
 	width: 950px;
 	height: 950px;
@@ -34,11 +34,7 @@ body {
 	stroke-width: 1px;
 	fill: none;
 }
-#vis-pie .label-box circle {
-	stroke-width: 1px;
-	stroke: #666;
-	fill: url('../img/example.jpg');
-}
+
 #vis-pie text { font-size: 11px; }
 
 #vis-pie g.chordsBox path {
@@ -53,15 +49,29 @@ body {
 #vis-pie g.chordsBox path.core-selected { stroke: #7B38CF; opacity: .8; }
 
 /** DETAIL STYLES **/
-#vis-detail { width: 200px; height:100%; display:none; font-size: 12px; background-color: #bcbdc0; padding: 5px; color:#fff;}
+#vis-detail { 
+	min-width: 200px;
+	height:100%; 
+	display:none;
+	font-size: 12px;
+	background-color: #bcbdc0;
+	padding: 5px;
+	color:#fff;
+}
 #vis-detail.viewable {  display: block; }
 #vis-detail #detail-head {  margin-bottom: 10px; padding: 5px; }
-#vis-detail #title-box { width: 150px; float:left; background-color: #d72829; padding: 5px; margin-left:-10px;}
+#vis-detail #title-box { 
+	min-width: 150px;
+	width: 75%; 
+	float:left; 
+	background-color: #d72829;
+	padding: 5px;
+	margin-left:-10px;
+}
 #vis-detail #title-box h3 { margin: 0; font-size:16px; padding:0; }
 #vis-detail #title-box h4 { margin: 0; padding: 0; }
-#vis-detail img { float:right; margin-right: -10px; margin-top: -10px;}
+#vis-detail img { margin-right: -10px; margin-top: -10px;}
 #vis-detail table th { text-align: left; vertical-align: top; padding-right: 10px; }
 
 /**ADD MORE STYLES HERE**/
-
 #vis-controls { width: 300px; height: 100%; }
