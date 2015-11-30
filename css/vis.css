@@ -14,8 +14,8 @@ body {
 /** CIRCULAR STYLES **/
 #vis-pie {
 	width: 67%;
-	min-width: 850px;
-	height: 850px;
+	min-width: 950px;
+	height: 950px;
 }
 #vis-pie svg {
 	width: 100%;
@@ -34,7 +34,12 @@ body {
 	stroke-width: 1px;
 	fill: none;
 }
-#vis-pie text { font-size: 13pt; }
+#vis-pie .label-box circle {
+	stroke-width: 1px;
+	stroke: #666;
+	fill: url('../img/example.jpg');
+}
+#vis-pie text { font-size: 11px; }
 
 #vis-pie g.chordsBox path {
 	stroke: #666;

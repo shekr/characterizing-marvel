@@ -7,19 +7,26 @@ var svg = d3.select("#vis-pie")
 	.append("svg");
 
 svg.append("g")
-	.attr("class", "pieSliceBox");
-svg.append("g")
+	.attr("id", "pieBox")
+	.append("g")
+	.attr("class", "pieSliceBox")
+
+svg.select("#pieBox")
+	.append("g")
 	.attr("class", "chordsBox");
 
 var bounds = d3.select('#vis-pie').node().getBoundingClientRect();
 
-var width = 750,
+var width = 950,
     height = 750,
 	radius = Math.min(width, height) / 2;
 
 var innerPieRadius = radius*.9;
-var outerTextRadius = radius*1.07;
+var outerTextRadius = radius*1.05;
 var innerArcLineRadius = radius*.8;
+
+var imageHeight = 112;
+var imageWidth = 75;
 
 var pie = d3.layout.pie()
 	.sort(null)
@@ -32,7 +39,7 @@ var arc = d3.svg.arc()
 	.innerRadius(innerPieRadius);
 
 var textArc = d3.svg.arc()
-	.innerRadius(radius)
+	.innerRadius(outerTextRadius)
 	.outerRadius(outerTextRadius);
 	
 var outsideArc = d3.svg.arc()
@@ -53,8 +60,8 @@ var arcLine = d3.svg.line()
     .interpolate("bundle")
 	.tension(.7);
 	
-svg.attr("transform", "translate(" + (bounds.width - width)/2 + "," + (bounds.height-height)/ 2 + ")");
-svg.select('g.chordsBox').attr("transform", "translate(" + radius + ", " + radius + ")");
+svg.attr("x", (bounds.width - width)/2).attr("y", (bounds.height-height)/2)
+svg.select("g#pieBox").attr("transform", "translate(" + bounds.width/2 + "," + bounds.height/ 2 + ")");
 
 var pieKey = function(d){ return d.data.cid; };
 
@@ -67,9 +74,9 @@ function updatePieData(data, connections) {
 		.data(pie(data), pieKey)
 		.enter()
 		.append("g")
-		.attr("transform", "translate(" + radius + ", " + radius + ")")
+		//.attr("transform", "translate(" + radius + ", " + radius + ")")
 		.attr("id", function(d) {
-			console.log(d);
+			//console.log(d);
 			return "sliceGroup-" + d.data.cid;
 		});
 
@@ -131,11 +138,45 @@ function updatePieData(data, connections) {
 	})
 
 	/** TEXT LABELS **/
-	var labelBoxes = sliceParents.append('g').classed('label-box', true);
-	labelBoxes.append("text")
-		.attr("transform", function(d) {
-			return "translate(" + textArc.centroid(d) + ")";
+	var labelBoxes = sliceParents
+	.append('g')
+	.classed('label-box', true)
+	.attr("transform", function(d) {
+		return "translate(" + textArc.centroid(d) + ")";
+	})
+	
+	labelBoxes.append("clipPath")
+		.attr("id", function(d) {
+			return "secondary-clip" + d.data.cid;
 		})
+		.append("circle")
+		.attr("r", 30)
+		.attr("cx", imageWidth/2)
+		.attr("cy", imageHeight/3)
+	
+	labelBoxes.append("image")
+	.attr("xlink:href", function(d) {
+		return "img/" + d.data.image;
+	})
+	.attr("height", imageHeight)
+	.attr("width", imageWidth)
+	.attr("transform", function(d, i) {
+		var vertTransform = 0;
+		var horizTransform = 0;
+		if (i > dataLength/2)
+			horizTransform = -imageWidth;
+		if (i < dataLength/4 || i > (dataLength/2 + dataLength/4)) 
+			vertTransform = -(imageHeight/2 + 25);
+		return "translate(" + horizTransform + "," + vertTransform +")";
+	})
+	.attr("clip-path", function(d) {
+		return "url(#secondary-clip" + d.data.cid + ")"
+	})
+	
+	labelBoxes.append("text")
+		/*.attr("transform", function(d) {
+			return "translate(" + textArc.centroid(d) + ")";
+		})*/
 		.attr("text-anchor", function(d, i) {
 			if (i < dataLength/2)
 				return "start";	
@@ -144,12 +185,7 @@ function updatePieData(data, connections) {
 		})
 		.text(function(d) {
 			return d.data.name;
-		});
-
-	labelBoxes.append("polyline")
-	.attr("points", function(d) {
-		return [outsideArc.centroid(d), textArc.centroid(d)];		
-	})
+		})
 		
 	//only create paths for slices that exist in curr view
 	var existingConnections = [];
