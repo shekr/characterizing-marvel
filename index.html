@@ -2,41 +2,55 @@
 <meta charset="utf-8">
 <link type="text/css" rel="stylesheet" href="css/vis.css" />
 <body>
-<div id="vis-controls" class="component">
-<p>Controls</p>
-</div>
-
-<div id="vis-pie" class="component">
-</div>
-
-<div id="vis-detail" class="component">
-    <div id="detail-head">
-        <div id="title-box">
-            <h3 id="detail-title"></h3>
-        </div>
-        <img id="detail-image" alt="character image" />
+    <div id="vis-controls" class="component">
+   		<p>Controls</p>
     </div>
-    <table id="detail-table">
-    	<tr><th>Affiliation(s)</th><td id="detail-affil"></td></tr>
-    	<tr><th># Appearances</th><td id="detail-appear"></td></tr>
-        <tr><th>Consommation</th><td id="detail-consomm"></td></tr>
-        <tr><th>Gender</th><td id="detail-gender"></td></tr>
-        <tr><th>Nationality</th><td id="detail-nat"></td></tr>
-        <tr><th>Power(s)</th><td id="detail-power"></td></tr>
-        <tr><th>Introduced</th><td id="detail-year"></td></tr>
-        <tr id="detail-connections"><th>Connections</th><td></td></tr>
-    </table>
-    <p id="detail-read-more"><a href="">Read more on Wikia</a></p>
-</div>
-
-<div id="vis-chart" class="component">
-</div>
-<script src="http://d3js.org/d3.v3.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="js/fake-data.js"></script>
-<script src="js/global.js"></script>
-<!-- COMPONENT SCRIPTS COME AFTER GLOBAL.JS -->
-<script src="js/pie.js"></script>
-<script src="js/detail.js"></script>
+    
+    <div id="vis-pie" class="component">
+        <!-- DELETE THIS FILLER WHEN INTEGRATE WITH FILTER COMPONENT -->
+        <button id="sorter">Sort!</button>
+        <button id="color-coder">Color code!</button>
+        <br />
+        <button id="adder">Add More Data!</button>
+        <button id="remover">Remove Data!</button>
+        <!-- END DELETE THIS FILLER WHEN INTEGRATE WITH FILTER COMPONENT -->
+        <svg>
+            <g id="pieBox">
+                <g id="pieSliceBox"></g>
+                <g id="chordsBox"></g>
+                <g id="barsBox"></g>	
+            </g>
+        </svg>
+    </div>
+    
+    <div id="vis-detail" class="component">
+        <div id="detail-head">
+            <div id="title-box">
+                <h3 id="detail-title"></h3>
+            </div>
+            <img id="detail-image" alt="character image" />
+        </div>
+        <table id="detail-table">
+            <tr><th>Affiliation(s)</th><td id="detail-affil"></td></tr>
+            <tr><th># Appearances</th><td id="detail-appear"></td></tr>
+            <tr><th>Consommation</th><td id="detail-consomm"></td></tr>
+            <tr><th>Gender</th><td id="detail-gender"></td></tr>
+            <tr><th>Nationality</th><td id="detail-nat"></td></tr>
+            <tr><th>Power(s)</th><td id="detail-power"></td></tr>
+            <tr><th>Introduced</th><td id="detail-year"></td></tr>
+            <tr id="detail-connections"><th>Connections</th><td></td></tr>
+        </table>
+        <p id="detail-read-more"><a href="">Read more on Wikia</a></p>
+    </div>
+    
+    <div id="vis-chart" class="component">
+    </div>
+    <script src="http://d3js.org/d3.v3.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="js/fake-data.js"></script>
+    <script src="js/global.js"></script>
+    <!-- COMPONENT SCRIPTS COME AFTER GLOBAL.JS -->
+    <script src="js/pie.js"></script>
+    <script src="js/detail.js"></script>
 
 </body>

@@ -3,17 +3,7 @@
 * uses helpful pointers from example: http://bl.ocks.org/dbuezas/9306799
 */
 
-var svg = d3.select("#vis-pie")
-	.append("svg");
-
-svg.append("g")
-	.attr("id", "pieBox")
-	.append("g")
-	.attr("class", "pieSliceBox")
-
-svg.select("#pieBox")
-	.append("g")
-	.attr("class", "chordsBox");
+var svg = d3.select("#vis-pie");
 
 var bounds = d3.select('#vis-pie').node().getBoundingClientRect();
 
@@ -29,7 +19,6 @@ var imageHeight = 112;
 var imageWidth = 75;
 
 var pie = d3.layout.pie()
-	.sort(null)
 	.value(function(d) {
 		return 1;
 	});	
@@ -64,89 +53,82 @@ svg.attr("x", (bounds.width - width)/2).attr("y", (bounds.height-height)/2)
 svg.select("g#pieBox").attr("transform", "translate(" + bounds.width/2 + "," + bounds.height/ 2 + ")");
 
 var pieKey = function(d){ return d.data.cid; };
+var chordKey = function(d) { return d.id1 + d.id2 }
 
 updatePieData(characterData, connectionsData);
 
-function updatePieData(data, connections) {
+/*** FILTER EXAMPLE IMPLEMENTATION ***/
+$('#sorter').click(function() {
+	sorting = 'gender';
+	characterData.sort(sortGender)
+	updatePieData(characterData, connectionsData);
+	return false;
+})
+
+$('#color-coder').click(function() {
+	colorCode = 'gender';
+	svg.selectAll('#pieSliceBox path.slice')
+		.transition()
+		.duration(300)
+		.style("fill", colCodeGender)
+	return false;
+})
+
+$('#adder').click(function() {
+	dataLength += 20;
+	getData(dataLength);
+	updatePieData(characterData, connectionsData)
+})
+
+$('#remover').click(function() {
+	dataLength -= 10;
+	characterData = characterData.slice(0,dataLength);
+	console.log(characterData.length);
+	updatePieData(characterData, connectionsData)
+})
+
+/*** END FILTER EXAMPLE IMPLEMENTATION ***/
+
+function updatePieData(data, connections) {	
 	
-	/** PIE SLICES **/
-	var sliceParents = svg.select('g.pieSliceBox').selectAll("g")
-		.data(pie(data), pieKey)
+	/** PIE SLICES **/	
+	var sliceParents = svg.select('#pieSliceBox').selectAll("g").data(pie(data), pieKey);
+	
+	sliceParents
 		.enter()
 		.append("g")
 		.attr("id", function(d) {
-			//console.log(d);
 			return "sliceGroup-" + d.data.cid;
+		})
+		.append("path")	
+		.attr("class", "slice")
+		.style("fill", function(d) {
+			switch (colorCode) {
+				case 'neutral': 
+					return '#666';
+					break;
+				case 'gender':
+					return colCodeGender(d)
+					break;	
+			}
 		});
-
-	sliceParents.append("path")
-		.attr('d', arc)
-		.attr("class", "slice");
-
-	/** SLICE EVENTS **/
-	var slices = svg.select('g.pieSliceBox').selectAll('g');
-	
-	slices.on('mouseover', function(d){
-		//slice and label
-		var nodeSelection = d3.select(this);
-		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
-		nodeSelection.classed('active', true);
-		svg.select('g.chordsBox').selectAll('.chord-' + charID).classed('active', true); //chords
-		populateDetailCard(nodeSelection.datum().data);	
-		d3.select('#vis-detail').classed('viewable', true);
-	})
-	
-	slices.on('mouseout', function(d){
-		//slice and label
-    	var nodeSelection = d3.select(this);
-		nodeSelection.classed('active', false);
-		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
-		svg.select('g.chordsBox').selectAll('.chord-' + charID).classed('active', false); //chords
-		selectC = svg.select('#pieBox g.selected');
-		if (selectC.size() > 0) {
-			populateDetailCard(selectC.datum().data);
-		} else {
-			d3.select('#vis-detail').classed('viewable', false);
-		}
-	})
-	
-	slices.on('click', function(d){
-		var nodeSelection = d3.select(this);
-		var selectedState = nodeSelection.classed('selected');
-		var coreState = nodeSelection.classed('core');
-		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
 		
-		//turn all selected off
-		slices.classed('selected', false);
-		svg.select('.chordsBox').selectAll('path').classed('selected', false).classed('core-selected', false);
-		svg.selectAll('g.selected-connection').classed('selected-connection', false);
-		if (coreState) {
-			//turn all selection off
-			nodeSelection.classed('core', false);
-		}
-		else {
-			if (selectedState) {
-				//turn core on	
-				nodeSelection.classed('core', true);
-				nodeSelection.classed('selected', true);
-				svg.select('g.chordsBox').selectAll('.core.chord-' + charID).classed('core-selected', true).each(function(nodeData) {
-					var connectedCharID = nodeData.id1 == charID ? nodeData.id2 : nodeData.id1
-					svg.select('#sliceGroup-' + connectedCharID).classed('selected-connection', true);
-				}); //chords
-				
-			}
-			else {
-				//turn selected on	
-				nodeSelection.classed('selected', true);
-				svg.select('g.chordsBox').selectAll('.chord-' + charID).classed('selected', true); //chords
-			}
-		}
-	})
-
-	/** TEXT LABELS **/
+	sliceParents.sort();	
+	sliceParents.select('path.slice')
+		.transition()
+		.duration(600)
+		.attr('d', arc);
+		
+	sliceParents.exit().remove()
+	
+	/** TEXT LABELS **/	
 	var labelBoxes = sliceParents
 	.append('g')
 	.classed('label-box', true)
+	
+	labelBoxes
+	.transition()
+	.duration(600)
 	.attr("transform", function(d) {
 		return "translate(" + textArc.centroid(d) + ")";
 	})
@@ -198,12 +180,28 @@ function updatePieData(data, connections) {
 		if (slice1.size() + slice2.size() > 1) {
 			existingConnections.push(connections[j]);
 		}
-	}
-		
-	var chords = svg.select('g.chordsBox').selectAll("path")
-		.data(existingConnections)
+	}	
+	
+	var chords = svg.select('#chordsBox').selectAll("path").data(existingConnections, chordKey)
+	chords
 		.enter()
 		.append("path")
+		.attr("class", function(d) {
+			var classes = 'chord-'+ d.id1 + ' ' + 'chord-'+ d.id2;
+			if (d.type != "standard")
+				classes += ' core';
+			return classes;
+		})
+		.classed('selected', function(d) {
+			if (svg.select('#sliceGroup-' + d.id1 + '.selected').size() > 0 || svg.select('#sliceGroup-' + d.id2+'.selected').size() > 0)
+				return true;
+			else
+				return false;
+		})
+		
+	chords
+		.transition()
+		.duration(600)
 		.attr("d", function(d) {
 			//console.log(svg.select('g.chordsBox path.chord-' + d.id1 + '.chord-' + d.id2).size());
 			var startSliceData = svg.select('#sliceGroup-' + d.id1).datum();
@@ -217,11 +215,67 @@ function updatePieData(data, connections) {
 			midPoint[1] = (endBuffer[1] + startBuffer[1])/2;	
 			return arcLine([startPoint, startBuffer, midPoint, endBuffer, endPoint]);			
 		})
-		.attr("class", function(d) {
-			var classes = 'chord-'+ d.id1 + ' ' + 'chord-'+ d.id2;
-			if (d.type != "standard")
-				classes += ' core';
-			return classes;
-		})
+		
+	chords.exit().remove()
+		
+	/** SLICE EVENTS **/
+	
+	sliceParents.on('mouseover', function(d){
+		//slice and label
+		var nodeSelection = d3.select(this);
+		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
+		nodeSelection.classed('active', true);
+		svg.select('#chordsBox').selectAll('.chord-' + charID).classed('active', true); //chords
+		populateDetailCard(nodeSelection.datum().data);	
+		d3.select('#vis-detail').classed('viewable', true);
+	})
+	
+	sliceParents.on('mouseout', function(d){
+		//slice and label
+    	var nodeSelection = d3.select(this);
+		nodeSelection.classed('active', false);
+		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
+		svg.select('#chordsBox').selectAll('.chord-' + charID).classed('active', false); //chords
+		selectC = svg.select('#pieBox g.selected');
+		if (selectC.size() > 0) {
+			populateDetailCard(selectC.datum().data);
+		} else {
+			d3.select('#vis-detail').classed('viewable', false);
+		}
+	})
+	
+	sliceParents.on('click', function(d){
+		var nodeSelection = d3.select(this);
+		var selectedState = nodeSelection.classed('selected');
+		var coreState = nodeSelection.classed('core');
+		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
+		
+		//turn all selected off
+		sliceParents.classed('selected', false);
+		svg.select('#chordsBox').selectAll('path').classed('selected', false).classed('core-selected', false);
+		svg.selectAll('g.selected-connection').classed('selected-connection', false);
+		if (coreState) {
+			//turn all selection off
+			nodeSelection.classed('core', false);
+		}
+		else {
+			if (selectedState) {
+				//turn core on	
+				nodeSelection.classed('core', true);
+				nodeSelection.classed('selected', true);
+				svg.select('#chordsBox').selectAll('.core.chord-' + charID).classed('core-selected', true).each(function(nodeData) {
+					var connectedCharID = nodeData.id1 == charID ? nodeData.id2 : nodeData.id1
+					svg.select('#sliceGroup-' + connectedCharID).classed('selected-connection', true);
+				}); //chords
+				
+			}
+			else {
+				//turn selected on	
+				nodeSelection.classed('selected', true);
+				svg.select('#chordsBox').selectAll('.chord-' + charID).classed('selected', true); //chords
+			}
+		}
+	})
+
 	
 };

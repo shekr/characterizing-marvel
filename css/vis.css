@@ -22,7 +22,7 @@ body {
 	height: 100%;
 }
 
-#vis-pie path.slice { fill: #555; }
+#vis-pie path.slice { stroke: #ccc; stroke-width: 1px; }
 #vis-pie .active path.slice, #vis-pie .selected path.slice  { fill: #f5ee31 !important; }
 #vis-pie .selected-connection path.slice { stroke: #f5ee31; stroke-width: 2px; }
 
@@ -37,16 +37,16 @@ body {
 
 #vis-pie text { font-size: 11px; }
 
-#vis-pie g.chordsBox path {
+#vis-pie #chordsBox path {
 	stroke: #666;
 	opacity: .5;
 	stroke-width: 2px;
 	fill:none;
 	display:none;
 }
-#vis-pie g.chordsBox path.active, #vis-pie g.chordsBox path.selected, #vis-pie g.chordsBox path.core-selected { display:block; }
-#vis-pie g.chordsBox path.selected { stroke: #000; opacity: .8; }
-#vis-pie g.chordsBox path.core-selected { stroke: #7B38CF; opacity: .8; }
+#vis-pie #chordsBox path.active, #vis-pie #chordsBox path.selected, #vis-pie #chordsBox path.core-selected { display:block; }
+#vis-pie #chordsBox path.selected { stroke: #000; opacity: .8; }
+#vis-pie #chordsBox path.core-selected { stroke: #7B38CF; opacity: .8; }
 
 /** DETAIL STYLES **/
 #vis-detail { 
