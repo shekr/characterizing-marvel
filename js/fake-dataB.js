@@ -10,20 +10,48 @@ var characterDetailData =
 
 var controlOptions = 
 {
-	gender: { 
+	"Gender": { 
 				subcategories: 
 				[ 
-					{ subcategory: "M", number: 5000}, {subcategory: "female", number: 2500 }
+					{ subcategory: "Male", number: 5000}, {subcategory: "Female", number: 2500 }
 				], 
 				number: 7500 
 			},
-	nationality: {		
+	"Nationality": {		
 					subcategories: 
 					[ 
 						{ subcategory: "American", number: 5000}, {subcategory: "Australian", number: 2500 }
 					], 
 					number: 7500 
-				}
+				},
+	"Affiliation": {		
+					subcategories: 
+					[ 
+						{ subcategory: "Avengers", number: 5000}, {subcategory: "X-Men", number: 2500 }
+					], 
+					number: 7500 
+				},
+	"Number of Appearances": {		
+					subcategories: 
+					[ 
+						{ subcategory: "0-100", number: 5000}, {subcategory: "100-500", number: 2500 }
+					], 
+					number: 7500 
+				},
+	"Year of Introduction": {		
+					subcategories: 
+					[ 
+						{ subcategory: "1950", number: 5000}, {subcategory: "1960", number: 2500 }
+					], 
+					number: 7500 
+				},	
+	"Consommation": {		
+					subcategories: 
+					[ 
+						{ subcategory: "Food", number: 5000}, {subcategory: "Other People", number: 2500 }
+					], 
+					number: 7500 
+				}																									
 }
 
 var relationshipData = [ 

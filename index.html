@@ -3,6 +3,7 @@
 <link type="text/css" rel="stylesheet" href="css/vis.css" />
 <!-- Latest compiled and minified CSS for Bootstrap-->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
 
 <body>
@@ -34,81 +35,51 @@
                   <div class="panel panel-default">
                     <div class="panel-heading">
                       <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#sort">
-                        Sort</a>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#sortPane">
+                        Sort 
+                        <a href="#"><i  id="sortAsc" class="fa fa-sort-amount-asc fa-fw"></i></a>
+                        <a href="#"><i id="sortDesc" class="fa fa-sort-amount-desc fa-fw inactive"></i></a>
                       </h4>
-                      <p>pinned sort option</p>
+                      <p>Sorted by Gender</p>
                     </div>
-                    <div id="sort" class="panel-collapse collapse in">
+                    <div id="sortPane" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <ul class="nav nav-sidebar">
-                                <li>
-                                    <a data-toggle="collapse" data-parent="#filter" href="#sortGender">Sort by Affiliation
-                                    </a>
-                                        <div id="sortGender" class="panel-collapse collapse fixed-panel">
-                                            <div class="panel-body">
-                                                <ul id="sortGenderlist"class="nav">
-                                                    <li class "checkbox">
-                                                        <label><input type="checkbox" value=""> Aff 1</label>
-                                                    </li>
+                            <ul id="sortList" class="nav nav-sidebar">
 
-                                                </ul>
-                                            </div>
-                                        </div>
-                                </li>
-                                <li><a href="">Sort item again</a></li>
-                                <li><a href="">One more sort</a></li>
-                                <li><a href="">Another sort item</a></li>
-                                <li><a href="">More navigation</a></li>
-                            </ul>
+                            </ul>                   
                         </div>
                     </div>
-                  </div>
+              </div>
+
                   <div class="panel panel-default">
                     <div class="panel-heading">
                       <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#filter">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#filterPane">
                         Filter</a>
                       </h4>
                     </div>
-                    <div id="filter" class="panel-collapse collapse">
+                    <div id="filterPane" class="panel-collapse collapse">
                       <div class="panel-body">
-                            <ul class="nav nav-sidebar">
-                                <li>
-                                    <a data-toggle="collapse" data-parent="#filter" href="#affiliation">Filter by Affiliation</a>
-                                    <div id="affiliation" class="panel-collapse collapse">
-                                        <div class="panel-body">
-                                            <ul class="nav">
-                                                <li>Aff1</li>
-                                                <li>Aff1</li>
-                                                <li>Aff1</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li><a href="">Filter item again</a></li>
-                                <li><a href="">One more filter</a></li>
-                                <li><a href="">Another filter item</a></li>
-                                <li><a href="">More navigation</a></li>
+                            <ul id="filterList" class="nav nav-sidebar" >
+
                             </ul>
                         </div>
                     </div>
+
+                                
+                            </ul>
                   </div>
                   <div class="panel panel-default">
                     <div class="panel-heading">
                       <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#colorcode">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#colorPane">
                         Color Code</a>
                       </h4>
                     </div>
-                    <div id="colorcode" class="panel-collapse collapse">
+                    <div id="colorPane" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <ul class="nav nav-sidebar">
-                                <li><a href="">Color by Affiliation</a></li>
-                                <li><a href="">Color item again</a></li>
-                                <li><a href="">One more Color</a></li>
-                                <li><a href="">Another color item</a></li>
-                                <li><a href="">More navigation</a></li>
+                            <ul id="colorList" class="nav nav-sidebar">
+
                             </ul>                   
                         </div>
                     </div>

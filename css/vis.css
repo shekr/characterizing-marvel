@@ -133,4 +133,10 @@ body {
   min-height: 50px;
   max-height: 100px;
   overflow-y: scroll;
+
+}
+
+.inactive{
+	color: gray;
+
 }
