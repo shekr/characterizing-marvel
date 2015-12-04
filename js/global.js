@@ -4,23 +4,26 @@
 */
 
 /* GLOBAL VARS */
-var dataLength = 10;
+var dataLength = 400;
 
 var characterData = [];
 var connectionsData = [];
 var filterData = [];
 
-var colorCode = 'neutral';
-var sorting = 'alphabetical';
+var chartSettings = {}
+chartSettings.innerChart = 'bars';
+chartSettings.barchart = 'appearances';
+chartSettings.colorCode = 'neutral';
+chartSettings.sorting = 'alphabetical';
 
 getData();
 
 /* SORT AND COLOR-CODE FUNCS */
 function sortAlpha(a,b) {  
 	if (a.name > b.name)
-		return -1;
-	else if (a.name < b.name)
 		return 1;
+	else if (a.name < b.name)
+		return -1;
 	else
 		return 0;
 }
@@ -41,9 +44,15 @@ function colCodeGender(d) {
 		return '#4f649d';
 }
 
-function getData() {
-	characterData = marvelCharacters.slice(0,dataLength);
-	switch (sorting) {
+function getData(start) {
+	start = start || 0;
+	if (chartSettings.innerChart == 'chords') {
+		characterData = marvelCharacters.slice(0,dataLength);
+		getConnectionsData(start);
+	}
+	else
+		characterData = characterDataBars.slice(0, dataLength);
+	switch (chartSettings.sorting) {
 		case 'alphabetical':
 			characterData.sort(sortAlpha)
 		 	break;
@@ -51,7 +60,6 @@ function getData() {
 			characterData.sort(sortGender);
 		break;
 	}
-	getConnectionsData(0);
 	filterData = getFilterData();
 	
 }

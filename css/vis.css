@@ -28,14 +28,10 @@ body {
 
 #vis-pie g.label-box { display:none; }
 #vis-pie .active g.label-box, #vis-pie .selected g.label-box, #vis-pie .selected-connection g.label-box { display:block; }
-#vis-pie polyline {
-	opacity: .5;
-	stroke: #666;
-	stroke-width: 1px;
-	fill: none;
-}
-
 #vis-pie text { font-size: 11px; }
+
+#vis-pie #chordsBox, #vis-pie #barsBox { display: none; }
+#vis-pie #pieBox.chords #chordsBox, #vis-pie #pieBox.bars #barsBox { display: block; }
 
 #vis-pie #chordsBox path {
 	stroke: #666;
@@ -47,6 +43,9 @@ body {
 #vis-pie #chordsBox path.active, #vis-pie #chordsBox path.selected, #vis-pie #chordsBox path.core-selected { display:block; }
 #vis-pie #chordsBox path.selected { stroke: #000; opacity: .8; }
 #vis-pie #chordsBox path.core-selected { stroke: #7B38CF; opacity: .8; }
+
+#vis-pie #barsBox path { fill: #aaa; }
+#vis-pie #barsBox path.active, #vis-pie #barsBox path.selected { fill: #f5ee31; }
 
 /** DETAIL STYLES **/
 #vis-detail { 
