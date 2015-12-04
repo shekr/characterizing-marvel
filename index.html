@@ -1,10 +1,120 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <link type="text/css" rel="stylesheet" href="css/vis.css" />
+<!-- Latest compiled and minified CSS for Bootstrap-->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+
 <body>
-    <div id="vis-controls" class="component">
-   		<p>Controls</p>
-    </div>
+    <!-- NAV BAR -->
+    <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" href="#">Marvel Comic Book Visualization</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                  <form class="navbar-form navbar-right">
+                    <input type="text" class="form-control" placeholder="Search...">
+                  </form>
+                </div>
+            </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div id="vis-controls" class="component col-sm-3 col-md-2 sidebar">
+                <h4>Controls</h4>
+                <div class="panel-group" id="accordion">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#sort">
+                        Sort</a>
+                      </h4>
+                      <p>pinned sort option</p>
+                    </div>
+                    <div id="sort" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <ul class="nav nav-sidebar">
+                                <li>
+                                    <a data-toggle="collapse" data-parent="#filter" href="#sortGender">Sort by Affiliation
+                                    </a>
+                                        <div id="sortGender" class="panel-collapse collapse fixed-panel">
+                                            <div class="panel-body">
+                                                <ul id="sortGenderlist"class="nav">
+                                                    <li class "checkbox">
+                                                        <label><input type="checkbox" value=""> Aff 1</label>
+                                                    </li>
+
+                                                </ul>
+                                            </div>
+                                        </div>
+                                </li>
+                                <li><a href="">Sort item again</a></li>
+                                <li><a href="">One more sort</a></li>
+                                <li><a href="">Another sort item</a></li>
+                                <li><a href="">More navigation</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#filter">
+                        Filter</a>
+                      </h4>
+                    </div>
+                    <div id="filter" class="panel-collapse collapse">
+                      <div class="panel-body">
+                            <ul class="nav nav-sidebar">
+                                <li>
+                                    <a data-toggle="collapse" data-parent="#filter" href="#affiliation">Filter by Affiliation</a>
+                                    <div id="affiliation" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <ul class="nav">
+                                                <li>Aff1</li>
+                                                <li>Aff1</li>
+                                                <li>Aff1</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><a href="">Filter item again</a></li>
+                                <li><a href="">One more filter</a></li>
+                                <li><a href="">Another filter item</a></li>
+                                <li><a href="">More navigation</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#colorcode">
+                        Color Code</a>
+                      </h4>
+                    </div>
+                    <div id="colorcode" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <ul class="nav nav-sidebar">
+                                <li><a href="">Color by Affiliation</a></li>
+                                <li><a href="">Color item again</a></li>
+                                <li><a href="">One more Color</a></li>
+                                <li><a href="">Another color item</a></li>
+                                <li><a href="">More navigation</a></li>
+                            </ul>                   
+                        </div>
+                    </div>
+                </div>
+            </div>                                  
+        </div>
     
     <div id="vis-pie" class="component">
         <!-- DELETE THIS FILLER WHEN INTEGRATE WITH FILTER COMPONENT -->
@@ -47,10 +157,13 @@
     </div>
     <script src="http://d3js.org/d3.v3.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <!-- Latest compiled and minified Bootstrap JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <script src="js/fake-data.js"></script>
     <script src="js/global.js"></script>
     <!-- COMPONENT SCRIPTS COME AFTER GLOBAL.JS -->
     <script src="js/pie.js"></script>
     <script src="js/detail.js"></script>
+    <script src="js/controls.js"></script>
 
 </body>
