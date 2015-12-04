@@ -18,3 +18,15 @@ function populateDetailCard(fChar) {
 	var coreC = $('.chord-'+fChar.cid+'.core').size();
 	$('#vis-detail #detail-connections td').html(totalC+' total<br />'+coreC+' core');
 }
+
+function populateRelationshipCard(data1, data2, rInfo) {
+	console.log(data1);
+	console.log(data2);
+	$('#vis-detail #comic-head').text(data1.name + ' & ' + data2.name)
+	$('#vis-detail #comic-image').attr('src', 'img/' + rInfo.image);
+	$('#vis-detail #comic-link').attr("href", rInfo.link);
+	$('#vis-detail #comic-title').text(rInfo.title);
+	$('#vis-detail #comic-author').text(rInfo.author);
+	$('#vis-detail #comics-more').attr("href", 'comics/id1='+ data1.cid +'&id2='+ data2.cid +'&set=all')
+	
+}

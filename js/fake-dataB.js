@@ -26,6 +26,16 @@ var controlOptions =
 				}
 }
 
+var relationshipData = [ 
+		{
+			image: "example-comic.jpg",
+			link: "http://google.com",
+			year: 2015,
+			title: "SPIDEY #1",
+			author: "Robbie Thompson"
+		}
+	]
+
 var marvelCharacters =  [
 	{
 		"cid":1,

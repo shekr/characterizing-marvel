@@ -204,6 +204,8 @@ function updatePie(data) {
 		.text(function(d) {
 			return d.data.name;
 		})
+		.classed("name", true)
+	
 		
 	/** SLICE EVENTS **/	
 	sliceParents.on('mouseover', function(d){
@@ -308,7 +310,7 @@ function updateChords(connections) {
 		var nodeSelection = d3.select(this);
 		var selectedState = nodeSelection.classed('selected');
 		var coreState = nodeSelection.classed('core');
-		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
+		var charID = d.data.cid;
 		
 		//turn all selected off
 		sliceParents.classed('selected', false);
@@ -319,12 +321,41 @@ function updateChords(connections) {
 		}
 		else {
 			if (selectedState) {
-				//turn core on	
+				//turn core on
+				var cDetail = relationshipData[0]; //TODO: replace with API call
 				nodeSelection.classed('core', true);
 				nodeSelection.classed('selected', true);
 				svg.select('#chordsBox').selectAll('.core.chord-' + charID).each(function(nodeData) {
+					//add class to slices
 					var connectedCharID = nodeData.id1 == charID ? nodeData.id2 : nodeData.id1
-					svg.select('#sliceGroup-' + connectedCharID).classed('selected-connection', true);
+					var connSelect = svg.select('#sliceGroup-' + connectedCharID)
+					connSelect.classed('selected-connection', true);
+					
+					//add instances numbers
+					var nameLabel = connSelect.select('.label-box text.name')
+					connSelect.select('.label-box').append('text')
+						.attr("text-anchor", function(d, i) {
+							return nameLabel.attr("text-anchor") 
+						})
+						.text(function(d) {
+							return nodeData.instances;
+						})
+						.attr("y", function(d) {
+							return nameLabel.attr("y") + 10;
+						})
+						.classed("instances", true)
+						
+					//add rollover detail
+					connSelect.select('g.label-box').on('mouseover', function(b) {
+						populateRelationshipCard(nodeSelection.datum().data, connSelect.datum().data, cDetail)
+						$('#vis-detail #relationship-detail').addClass("active");						
+					})
+					
+					d3.select(this).on('mouseover', function(d) {
+						populateRelationshipCard(nodeSelection.datum().data, connSelect.datum().data, cDetail)
+						$('#vis-detail #relationship-detail').addClass("active");						
+					})
+						
 				}); //chords
 				
 			}
@@ -337,7 +368,9 @@ function updateChords(connections) {
 	
 	sliceParents.on('mouseover.chord', function(d){
 		//chords
-		var charID = d3.select(this).attr("id").replace('sliceGroup-', '');
+		var charID = d.data.cid;
+		if (!d3.select(this).classed("selected-connection"))
+			$('#vis-detail #relationship-detail').removeClass('active');
 		svg.select('#chordsBox').selectAll('.chord-' + charID).classed('active', true);
 	})
 	

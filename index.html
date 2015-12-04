@@ -6,7 +6,7 @@
 
 
 <body>
-    <!-- NAV BAR -->
+    <!-- NAV BAR 
     <nav class="navbar navbar-inverse">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -24,7 +24,7 @@
                   </form>
                 </div>
             </div>
-    </nav>
+    </nav>-->
 
     <div class="container-fluid">
         <div class="row">
@@ -118,11 +118,13 @@
     
     <div id="vis-pie" class="component">
         <!-- DELETE THIS FILLER WHEN INTEGRATE WITH FILTER COMPONENT -->
-        <button id="sorter">Sort!</button>
-        <button id="color-coder">Color code!</button> | 
-        <button id="adder">Add More Data!</button>
-        <button id="remover">Remove Data!</button> | 
-        <button id="mode-changer">Mode!</button>
+        <div class="btn-group" role="group">
+        <button type="button" class="btn btn-default" id="sorter">Sort!</button>
+        <button type="button" class="btn btn-default" id="color-coder">Color code!</button> 
+        <button type="button" class="btn btn-default" id="adder">Add More Data!</button>
+        <button type="button" class="btn btn-default" id="remover">Remove Data!</button>
+        <button type="button" class="btn btn-default" id="mode-changer">Mode!</button>
+        </div>
         <!-- END DELETE THIS FILLER WHEN INTEGRATE WITH FILTER COMPONENT -->
         <svg>
             <g id="pieBox">
@@ -134,23 +136,35 @@
     </div>
     
     <div id="vis-detail" class="component">
-        <div id="detail-head">
-            <div id="title-box">
-                <h3 id="detail-title"></h3>
+    	<div id="character-detail">
+            <div id="detail-head">
+                <div id="title-box">
+                    <h3 id="detail-title" class="panel-title"></h3>
+                </div>
+                <img id="detail-image" alt="character image" />
             </div>
-            <img id="detail-image" alt="character image" />
+            <table id="detail-table">
+                <tr><th>Affiliation(s)</th><td id="detail-affil"></td></tr>
+                <tr><th># Appearances</th><td id="detail-appear"></td></tr>
+                <tr><th>Consommation</th><td id="detail-consomm"></td></tr>
+                <tr><th>Gender</th><td id="detail-gender"></td></tr>
+                <tr><th>Nationality</th><td id="detail-nat"></td></tr>
+                <tr><th>Power(s)</th><td id="detail-power"></td></tr>
+                <tr><th>Introduced</th><td id="detail-year"></td></tr>
+                <tr id="detail-connections"><th>Connections</th><td></td></tr>
+            </table>
+            <p id="detail-read-more"><a href="">Read more on Wikia</a></p>
         </div>
-        <table id="detail-table">
-            <tr><th>Affiliation(s)</th><td id="detail-affil"></td></tr>
-            <tr><th># Appearances</th><td id="detail-appear"></td></tr>
-            <tr><th>Consommation</th><td id="detail-consomm"></td></tr>
-            <tr><th>Gender</th><td id="detail-gender"></td></tr>
-            <tr><th>Nationality</th><td id="detail-nat"></td></tr>
-            <tr><th>Power(s)</th><td id="detail-power"></td></tr>
-            <tr><th>Introduced</th><td id="detail-year"></td></tr>
-            <tr id="detail-connections"><th>Connections</th><td></td></tr>
-        </table>
-        <p id="detail-read-more"><a href="">Read more on Wikia</a></p>
+        <div id="relationship-detail">
+        	<h3 id="comic-head"></h3>
+            <h4 id="comic-title"></h4>
+            <p>By <span id="comic-author"></span></p>
+	    	<p><a href="" id="comic-link">
+                <img id="comic-image" alt="character image" />
+            </a></p>
+            <p><a href="" class="btn btn-default" id="comics-more">More Comics!</a></p>
+        
+        </div>
     </div>
     
     <div id="vis-chart" class="component">

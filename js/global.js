@@ -11,7 +11,7 @@ var connectionsData = [];
 var filterData = [];
 
 var chartSettings = {}
-chartSettings.innerChart = 'bars';
+chartSettings.innerChart = 'chords';
 chartSettings.barchart = 'appearances';
 chartSettings.colorCode = 'neutral';
 chartSettings.sorting = 'alphabetical';
@@ -81,6 +81,7 @@ function getConnectionsData(startIndex) {
 					charConnections.id2 = characterData[indexR].cid;
 					var indexConn = Math.floor(Math.random()*connectionTypes.length);
 					charConnections.type = connectionTypes[indexConn];
+					charConnections.instances = Math.ceil(Math.random()*500);
 					connectionsData.push(charConnections);	
 				}
 			}

@@ -31,6 +31,7 @@ body {
 #vis-pie g.label-box { display:none; }
 #vis-pie .active g.label-box, #vis-pie .selected g.label-box, #vis-pie .selected-connection g.label-box { display:block; }
 #vis-pie text { font-size: 11px; }
+#vis-pie text.instances { fill: #7B38CF; }
 
 #vis-pie #chordsBox, #vis-pie #barsBox { display: none; }
 #vis-pie #pieBox.chords #chordsBox, #vis-pie #pieBox.bars #barsBox { display: block; }
@@ -51,13 +52,16 @@ body {
 
 /** DETAIL STYLES **/
 #vis-detail { 
+	display:none;
 	min-width: 200px;
 	height:100%; 
 	display:none;
 	font-size: 12px;
-	background-color: #bcbdc0;
-	padding: 5px;
-	color:#fff;
+	border: 1px solid #eee;
+	padding: 10px;
+	border-radius: 3px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+	/*background-color:#f5f5f5;*/
 }
 #vis-detail.viewable {  display: block; }
 #vis-detail #detail-head {  margin-bottom: 10px; padding: 5px; }
@@ -68,11 +72,17 @@ body {
 	background-color: #d72829;
 	padding: 5px;
 	margin-left:-10px;
+	color:#fff;
 }
-#vis-detail #title-box h3 { margin: 0; font-size:16px; padding:0; }
-#vis-detail #title-box h4 { margin: 0; padding: 0; }
-#vis-detail img { margin-right: -10px; margin-top: -10px;}
+#vis-detail  h3 { margin: 0; font-size: 18px; padding:5px; }
+#vis-detail  h4 { margin: 0; font-size: 14px; padding: 0; }
+#vis-detail #detail-image { margin-right: -10px; margin-top: -10px;}
 #vis-detail table th { text-align: left; vertical-align: top; padding-right: 10px; }
+
+#vis-detail #relationship-detail { display:none; }
+#vis-detail #relationship-detail.active { display:block; }
+#vis-detail #comic-head { background-color: #9579b8; color:#fff; margin: 0 0 10px -5px; }
+#vis-detail #comic-image { height:200px; }
 
 
 /**ADD MORE STYLES HERE**/
@@ -124,15 +134,3 @@ body {
   max-height: 100px;
   overflow-y: scroll;
 }
-
-/** DETAIL STYLES **/
-
-#vis-detail { width: 10%; height:100%; }
-
-
-
-
-
-
-
-
