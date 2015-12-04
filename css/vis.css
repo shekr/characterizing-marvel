@@ -125,6 +125,11 @@ body {
   overflow-y: scroll;
 }
 
+.inactive{
+	color: gray;
+
+}
+
 /** DETAIL STYLES **/
 
 #vis-detail { width: 10%; height:100%; }
