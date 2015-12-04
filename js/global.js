@@ -90,6 +90,8 @@ function getConnectionsData(startIndex) {
 
 function getFilterData() {
 	/* RUTA/ROBIN THIS IS FOR YOU */	
+	console.log("Getting updated list of available control options")
+	return controlOptions;
 }
 
 

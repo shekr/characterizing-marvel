@@ -8,6 +8,24 @@ var characterDetailData =
 	
 }
 
+var controlOptions = 
+{
+	gender: { 
+				subcategories: 
+				[ 
+					{ subcategory: "M", number: 5000}, {subcategory: "female", number: 2500 }
+				], 
+				number: 7500 
+			},
+	nationality: {		
+					subcategories: 
+					[ 
+						{ subcategory: "American", number: 5000}, {subcategory: "Australian", number: 2500 }
+					], 
+					number: 7500 
+				}
+}
+
 var marvelCharacters =  [
 	{
 		"cid":1,

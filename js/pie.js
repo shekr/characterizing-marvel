@@ -244,14 +244,14 @@ function defaultSliceGroupClickHandler (d) {
 
 function updateChords(connections) {
 	//only create paths for slices that exist in curr view
-	/*var existingConnections = [];
+	var existingConnections = [];
 	for (var j = 0; j < connections.length; j++) {
 		var slice1 = svg.select('#sliceGroup-' + connections[j].id1);
 		var slice2 = svg.select('#sliceGroup-' + connections[j].id2);
 		if (slice1.size() + slice2.size() > 1) {
 			existingConnections.push(connections[j]);
 		}
-	}*/	
+	}	
 	
 	var chords = svg.select('#chordsBox').selectAll("path").data(connections, chordKey)
 	chords.exit().remove()
