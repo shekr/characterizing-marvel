@@ -3,6 +3,7 @@
 * uses helpful pointers from example: http://bl.ocks.org/dbuezas/9306799
 */
 
+/* PIE VARS */
 var svg = d3.select("#vis-pie");
 
 var bounds = d3.select('#vis-pie').node().getBoundingClientRect();
@@ -15,8 +16,8 @@ var innerPieRadius = radius*.9;
 var outerTextRadius = radius*1.05;
 var innerArcLineRadius = radius*.8;
 
-var imageHeight = 112;
-var imageWidth = 75;
+var imageHeight = 60;
+var imageWidth = 60;
 
 var pie = d3.layout.pie()
 	.value(function(d) {
@@ -52,17 +53,17 @@ var arcLine = d3.svg.line()
 svg.attr("x", (bounds.width - width)/2).attr("y", (bounds.height-height)/2)
 svg.select("g#pieBox").attr("transform", "translate(" + bounds.width/2 + "," + bounds.height/ 2 + ")");
 
-var pieKey = function(d){ return d.data.cid; };
-var chordKey = function(d) {
+/* KEY FUNCS */
+var pieKey = function(d){ return d.data.character_id; };
+var chordKey = function(d, i) {
 	if (d.id1 == Math.min(d.id1, d.id2))
 		return d.id1 +  '-' + d.id2
 	else
 		return d.id2 +  '-' + d.id1
 }
-var barKey = function(d) { return 'bar'+d.data.cid }
+var barKey = function(d) { return 'bar'+d.data.character_id }
 
 svg.select('#pieBox').classed(chartSettings.innerChart, true);
-updateChart();
 
 /*** FILTER EXAMPLE IMPLEMENTATION ***/
 $('#sorter').click(function() {
@@ -83,37 +84,40 @@ $('#color-coder').click(function() {
 $('#adder').click(function() {
 	dataLength += 20;
 	getData(dataLength);
-	updateChart();
-
 })
 
 $('#remover').click(function() {
 	dataLength -= 10;
 	characterData = characterData.slice(0,dataLength);
-	updateChart();	
+	updateChart();
 })
 
 $('#mode-changer').click(function() {
 	$('#pieBox').removeAttr("class");
-	if (chartSettings.innerChart == 'bars') 
-		chartSettings.innerChart = 'chords';	
-	else {
+	if (chartSettings.innerChart == 'bars') { 
+		//switch to chords
+		chartSettings.innerChart = 'chords';
+	}
+	else { //switch to bars
 		chartSettings.innerChart = 'bars';
 		$('#pieSliceBox > g.core').attr("class", "selected");
 		$('#pieSliceBox > g.selected-connection').removeAttr("class")
 		if ($('#chordsBox > path.core-selected').size() > 0)
 			$('#chordsBox > path.core-selected').attr("class", $('#chordsBox > path.core-selected').attr("class").replace('core-selected', 'selected'))
 	}
-	if (Object.keys(characterData[0]).indexOf("barchart") < 0 || connectionsData.length < 1) {
+	if (Object.keys(characterData[0]).indexOf("barchart") < 0 || connectionsData.length < 1) { //only generate random data for new data
 		getData();	
 	} else {
 		getData(dataLength);	
 	}
-	$('#pieBox').attr("class", chartSettings.innerChart);
-	updateChart();	
 })
 /*** END FILTER EXAMPLE IMPLEMENTATION ***/
 
+/* INIT DATA CALL*/
+getData();
+	
+	
+/* VIS UPDATE FUNCS */
 function updateChart() {
 	updatePie(characterData)
 	if (chartSettings.innerChart == 'bars')
@@ -122,7 +126,9 @@ function updateChart() {
 		updateChords(connectionsData);	
 }
 
-function updatePie(data) {	
+function updatePie(data) {
+	
+	svg.select('#pieBox').attr("class", chartSettings.innerChart);
 	
 	/** PIE SLICES **/	
 	var sliceParents = svg.select('#pieSliceBox').selectAll("g").data(pie(data), pieKey);
@@ -131,7 +137,7 @@ function updatePie(data) {
 		.enter()
 		.append("g")
 		.attr("id", function(d) {
-			return "sliceGroup-" + d.data.cid;
+			return "sliceGroup-" + d.data.character_id;
 		})
 		.append("path")	
 		.attr("class", "slice")
@@ -154,7 +160,8 @@ function updatePie(data) {
 		
 	sliceParents.exit().remove()
 	
-	/** TEXT LABELS **/	
+	/** TEXT LABELS **/
+	/* GROUP */
 	var labelBoxes = sliceParents
 	.append('g')
 	.classed('label-box', true)
@@ -166,18 +173,20 @@ function updatePie(data) {
 		return "translate(" + textArc.centroid(d) + ")";
 	})
 	
+	/* CLIPPING PATH */
 	labelBoxes.append("clipPath")
 		.attr("id", function(d) {
-			return "secondary-clip" + d.data.cid;
+			return "secondary-clip" + d.data.character_id;
 		})
 		.append("circle")
-		.attr("r", 30)
+		.attr("r", imageHeight/2)
 		.attr("cx", imageWidth/2)
-		.attr("cy", imageHeight/3)
+		.attr("cy", imageHeight/2)
 	
+	/* IMAGE */
 	labelBoxes.append("image")
 	.attr("xlink:href", function(d) {
-		return "img/" + d.data.image;
+		return generateImageLink(d.data.image, "standard_medium")
 	})
 	.attr("height", imageHeight)
 	.attr("width", imageWidth)
@@ -187,13 +196,21 @@ function updatePie(data) {
 		if (i > dataLength/2)
 			horizTransform = -imageWidth;
 		if (i < dataLength/4 || i > (dataLength/2 + dataLength/4)) 
-			vertTransform = -(imageHeight/2 + 25);
+			vertTransform = -(imageHeight+10);
 		return "translate(" + horizTransform + "," + vertTransform +")";
 	})
 	.attr("clip-path", function(d) {
-		return "url(#secondary-clip" + d.data.cid + ")"
+		return "url(#secondary-clip" + d.data.character_id + ")"
 	})
 	
+	//detail pane images prefetch
+	labelBoxes.append("image")
+		.attr("xlink:href", function(d) {
+			return generateImageLink(d.data.image, "portrait_medium")
+		})
+		.attr("class", "detail-pane");
+	
+	/* NAME TEXT */
 	labelBoxes.append("text")
 		.attr("text-anchor", function(d, i) {
 			if (i < dataLength/2)
@@ -234,7 +251,7 @@ function updatePie(data) {
 };
 
 function defaultSliceGroupClickHandler (d) {
-		var charID = d.data.cid;
+		var charID = d.data.character_id;
 		var sliceParents = d3.selectAll('#pieSliceBox > g');
 		var nodeSelection = svg.select('#sliceGroup-'+charID);
 		var selectedState = nodeSelection.classed('selected');
@@ -247,17 +264,22 @@ function defaultSliceGroupClickHandler (d) {
 function updateChords(connections) {
 	//only create paths for slices that exist in curr view
 	var existingConnections = [];
+	var charIndices = characterData.map(function(x) {return x.character_id; });
 	for (var j = 0; j < connections.length; j++) {
-		var slice1 = svg.select('#sliceGroup-' + connections[j].id1);
-		var slice2 = svg.select('#sliceGroup-' + connections[j].id2);
+		var currConex = connections[j];
+		var slice1 = svg.select('#sliceGroup-' + currConex.id1);
+		var slice2 = svg.select('#sliceGroup-' + currConex.id2);
 		if (slice1.size() + slice2.size() > 1) {
+			//add in index of their slices so that when either moves, triggers update in data
+			currConex.sIndex1 = charIndices.indexOf(currConex.id1)
+			currConex.sIndex2 = charIndices.indexOf(currConex.id2)
 			existingConnections.push(connections[j]);
 		}
 	}	
 	
-	var chords = svg.select('#chordsBox').selectAll("path").data(connections, chordKey)
+	var chords = svg.select('#chordsBox').selectAll("path").data(existingConnections, chordKey)
 	chords.exit().remove()
-	console.log(chords.enter().size())
+
 	chords
 		.enter()
 		.append("path")
@@ -279,6 +301,7 @@ function updateChords(connections) {
 		.transition()
 		.duration(600)
 		.attr("d", function(d) {
+			console.log('should be getting called');
 			//console.log(svg.select('g.chordsBox path.chord-' + d.id1 + '.chord-' + d.id2).size());
 			var startSliceData = svg.select('#sliceGroup-' + d.id1).datum();
 			var endSliceData = svg.select('#sliceGroup-'  + d.id2).datum();
@@ -310,7 +333,7 @@ function updateChords(connections) {
 		var nodeSelection = d3.select(this);
 		var selectedState = nodeSelection.classed('selected');
 		var coreState = nodeSelection.classed('core');
-		var charID = d.data.cid;
+		var charID = d.data.character_id;
 		
 		//turn all selected off
 		sliceParents.classed('selected', false);
@@ -368,7 +391,7 @@ function updateChords(connections) {
 	
 	sliceParents.on('mouseover.chord', function(d){
 		//chords
-		var charID = d.data.cid;
+		var charID = d.data.character_id;
 		if (!d3.select(this).classed("selected-connection"))
 			$('#vis-detail #relationship-detail').removeClass('active');
 		svg.select('#chordsBox').selectAll('.chord-' + charID).classed('active', true);
@@ -409,7 +432,7 @@ function updateBars(data) {
 		.append("path")
 		.attr("class", "barSlice")
 		.attr("id", function(d) {
-			return "bar-" + d.data.cid;
+			return "bar-" + d.data.character_id;
 		})
 	
 	bars
@@ -430,12 +453,12 @@ function updateBars(data) {
 	/* Bar Events */
 	bars.on('mouseover', function(d) {
 		d3.select(this).classed("active", true);
-		svg.select('#sliceGroup-'+d.data.cid).classed('active', true);
+		svg.select('#sliceGroup-'+d.data.character_id).classed('active', true);
 	})
 	
 	bars.on('mouseout', function(d) {
 		d3.select(this).classed("active", false);
-		svg.select('#sliceGroup-'+d.data.cid).classed('active', false);
+		svg.select('#sliceGroup-'+d.data.character_id).classed('active', false);
 	})
 	
 	bars.on('click', function(d) {
@@ -447,18 +470,18 @@ function updateBars(data) {
 	var sliceParents = svg.selectAll('g#pieSliceBox > g');
 	
 	sliceParents.on('mouseover.bars', function(d) {
-		svg.select('#bar-'+d.data.cid).classed('active', true);
+		svg.select('#bar-'+d.data.character_id).classed('active', true);
 	})
 	
 	sliceParents.on('mouseout.bars', function(d) {
-		svg.select('#bar-'+d.data.cid).classed('active', false);
+		svg.select('#bar-'+d.data.character_id).classed('active', false);
 	})
 	
 	sliceParents.on('click.bars', sliceParentsBarClickHandler);	
 }
 
 function sliceParentsBarClickHandler(d) {
-	var charID = d.data.cid;
+	var charID = d.data.character_id;
 	var selectedStateNow = svg.select('#sliceGroup-'+charID).classed('selected');
 	svg.selectAll('#barsBox path.barSlice').classed('selected', false);
 	svg.select('#bar-'+charID).classed('selected', selectedStateNow);

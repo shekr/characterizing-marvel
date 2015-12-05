@@ -4,7 +4,7 @@
 */
 
 /* GLOBAL VARS */
-var dataLength = 400;
+var dataLength = 200;
 
 var characterData = [];
 var connectionsData = [];
@@ -15,8 +15,6 @@ chartSettings.innerChart = 'chords';
 chartSettings.barchart = 'appearances';
 chartSettings.colorCode = 'neutral';
 chartSettings.sorting = 'alphabetical';
-
-getData();
 
 /* SORT AND COLOR-CODE FUNCS */
 function sortAlpha(a,b) {  
@@ -38,32 +36,47 @@ function sortGender(a, b) {
 }
 
 function colCodeGender(d) {
-	if(d.data.gender == 'M')
+	if(d.data.gender == 'Male')
 		return '#d72829';
-	else
+	else if (d.data.gender == 'Female')
 		return '#4f649d';
 }
 
-function getData(start) {
-	start = start || 0;
-	if (chartSettings.innerChart == 'chords') {
-		characterData = marvelCharacters.slice(0,dataLength);
-		getConnectionsData(start);
-	}
-	else
-		characterData = characterDataBars.slice(0, dataLength);
-	switch (chartSettings.sorting) {
-		case 'alphabetical':
-			characterData.sort(sortAlpha)
-		 	break;
-		case 'gender':
-			characterData.sort(sortGender);
-		break;
-	}
-	filterData = getFilterData();
-	
+/* OTHER UTILITY FUNCS*/
+function generateImageLink(origLink, newType) {
+	var extension = origLink.match(/\.[a-zA-Z]{3,4}$/)[0];
+	var mainLink = origLink.replace(extension, '');
+	return mainLink + "/" + newType + extension;
 }
 
+/**GET DATA  - NOW USING REAL END POINT**/
+function getData(start) {
+	start = start || 0;
+	$.post( "https://marvelinfovis.herokuapp.com/api/filter/gender/", { gender: "male"})
+	.done(function(data) {
+		characterData = data.slice(0,dataLength);
+		//console.log(characterData)
+		if (chartSettings.innerChart == 'chords') {
+			getConnectionsData(start);
+		} else {
+			getBarData(start);
+		}
+		switch (chartSettings.sorting) {
+			case 'alphabetical':
+				characterData.sort(sortAlpha)
+				break;
+			case 'gender':
+				characterData.sort(sortGender);
+			break;
+		}
+		filterData = getFilterData();
+		/***ANY UPDATES TO THE UI DEPENDENT ON DATA MUST BE CALLED HERE**/
+		
+		updateChart();
+	})	
+}
+
+/** FAKE DATA GENERATORS **/
 function getConnectionsData(startIndex) {
 	//create some random connection data
 	var connectionTypes = ["family", "standard", "romantic"];
@@ -73,12 +86,12 @@ function getConnectionsData(startIndex) {
 				var valR = Math.floor(Math.random()*dataLength);
 				if (valR % 200 == 0) {
 					var charConnections = {};
-					charConnections.id1 = characterData[i].cid;
+					charConnections.id1 = characterData[i].character_id;
 					var indexR = Math.floor(Math.random()*dataLength);
 					while (indexR == i) {
 						indexR = Math.floor(Math.random()*dataLength);
 					}
-					charConnections.id2 = characterData[indexR].cid;
+					charConnections.id2 = characterData[indexR].character_id;
 					var indexConn = Math.floor(Math.random()*connectionTypes.length);
 					charConnections.type = connectionTypes[indexConn];
 					charConnections.instances = Math.ceil(Math.random()*500);
@@ -87,6 +100,21 @@ function getConnectionsData(startIndex) {
 			}
 		}
 	}
+}
+
+function getBarData(startIndex) {
+	//create some random barchart data and append to charData
+	for (var i = startIndex; i < dataLength; i++) {
+	var currChar = characterData[i];
+	currChar.barchart = {};
+	currChar.barchart.appearances = Math.floor(Math.random()*10000);
+	currChar.barchart.aliases = Math.floor(Math.random()*10)
+	currChar.barchart.connections = Math.floor(Math.random()*500);
+	currChar.barchart.affilations = Math.floor(Math.random() * 20);
+	currChar.barchart.powers = Math.floor(Math.random()*10);
+	characterData[i] = currChar;
+}
+	
 }
 
 function getFilterData() {

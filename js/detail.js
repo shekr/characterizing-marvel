@@ -6,7 +6,16 @@ function populateDetailCard(fChar) {
 	$('#vis-detail #title-box h4').remove();
 	if (details.aliases != null && details.aliases != "" && details.aliases.length > 0)
 		$('#vis-detail #title-box').append('<h4>'+details.aliases.join(", ")+'</h4>');		
-	$('#vis-detail #detail-image').attr('src', 'img/' + fChar.image);
+	$('#vis-detail #bio').text(function() {
+		if (fChar.bio_desc.length > 497) {
+			return fChar.bio_desc.substring(0, 500) + "...";
+		}
+		else
+			return fChar.bio_desc;
+	});
+	$('#vis-detail #detail-image').attr('src', function() {
+		return generateImageLink(fChar.image, "portrait_medium")
+	});
 	$('#vis-detail #detail-affil').text(details.affiliation.join(", "));
 	$('#vis-detail #detail-appear').text(fChar.appearances)
 	$('#vis-detail #detail-consomm').text(details.consommation);
