@@ -23,19 +23,17 @@ function populateDetailCard(fChar) {
 	$('#vis-detail #detail-nat').text(fChar.nationality)
 	$('#vis-detail #detail-power').text(details.power.join(", "))
 	$('#vis-detail #detail-year').text(fChar.intro_year)
-	var totalC = $('.chord-'+ fChar.cid).size();
-	var coreC = $('.chord-'+fChar.cid+'.core').size();
-	$('#vis-detail #detail-connections td').html(totalC+' total<br />'+coreC+' core');
+	var totalC = $('.chord-'+ fChar.character_id).size();
+	var coreC = $('.chord-'+fChar.character_id+'.core').size();
+	$('#vis-detail #detail-connections td').html(totalC+' total, '+coreC+' core');
 }
 
 function populateRelationshipCard(data1, data2, rInfo) {
-	console.log(data1);
-	console.log(data2);
 	$('#vis-detail #comic-head').text(data1.name + ' & ' + data2.name)
 	$('#vis-detail #comic-image').attr('src', 'img/' + rInfo.image);
 	$('#vis-detail #comic-link').attr("href", rInfo.link);
 	$('#vis-detail #comic-title').text(rInfo.title);
 	$('#vis-detail #comic-author').text(rInfo.author);
-	$('#vis-detail #comics-more').attr("href", 'comics/id1='+ data1.cid +'&id2='+ data2.cid +'&set=all')
+	$('#vis-detail #comics-more').attr("href", 'comics/id1='+ data1.character_id +'&id2='+ data2.character_id +'&set=all')
 	
 }

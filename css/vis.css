@@ -12,7 +12,6 @@ body {
 }
 .component { float:left; }
 
-
 /** PIE STYLES **/
 
 #vis-pie {
@@ -24,19 +23,22 @@ body {
 	height: 100%;
 }
 
+/* SLICES */
 #vis-pie path.slice { stroke: #ccc; stroke-width: 1px; }
 #vis-pie .active path.slice, #vis-pie .selected path.slice  { fill: #f5ee31 !important; }
 #vis-pie .selected-connection path.slice { stroke: #f5ee31; stroke-width: 2px; }
+#vis-pie text.name-only { display: none; }
 
+/* LABELS */
 #vis-pie g.label-box  { display:none; }
 /*#vis-pie #pieSliceBox > g:nth-child(5n) g.label-box  { display:block; }*/
 #vis-pie .active g.label-box, #vis-pie .selected g.label-box, #vis-pie .selected-connection g.label-box { display:block; }
 #vis-pie text { font-size: 11px; }
 #vis-pie text.instances { fill: #7B38CF; }
 
+/* CHORDS */
 #vis-pie #chordsBox, #vis-pie #barsBox { display: none; }
 #vis-pie #pieBox.chords #chordsBox, #vis-pie #pieBox.bars #barsBox { display: block; }
-
 #vis-pie #chordsBox path {
 	stroke: #666;
 	opacity: .5;
@@ -48,8 +50,13 @@ body {
 #vis-pie #chordsBox path.selected { stroke: #000; opacity: .8; }
 #vis-pie #chordsBox path.core-selected { stroke: #7B38CF; opacity: .8; }
 
+/* BARS */
+#vis-pie #barsBox circle.refLine { stroke: #cdf4ff; stroke-width: 1px; fill: none; }
+#vis-pie #barsBox text.ref { fill: #06637f; font-size:9px; font-weight:bold; }
 #vis-pie #barsBox path { fill: #aaa; }
-#vis-pie #barsBox path.active, #vis-pie #barsBox path.selected { fill: #f5ee31; }
+#vis-pie #barsBox .active path, #vis-pie #barsBox .selected path { fill: #000; }
+#vis-pie #barsBox .bar-label { font-size: 8px; dominant-baseline: middle; display:none; }
+#vis-pie #barsBox .active .bar-label, #vis-pie #barsBox .selected .bar-label  { display:block; }
 
 /** DETAIL STYLES **/
 #vis-detail { 
@@ -75,10 +82,10 @@ body {
 	color:#fff;
 }
 #vis-detail  h3 { margin: 0; font-size: 18px; padding:5px; }
-#vis-detail  h4 { margin: 0; font-size: 14px; padding: 5px; }
+#vis-detail  h4 { margin: 0; margin-top:-5px; font-size: 14px; padding: 0 5px 5px 5px; }
 #vis-detail #detail-image { float:right; width:100px;}
 #vis-detail #bio { font-style: 10px; height: 180px; }
-#vis-detail table th { text-align: left; vertical-align: top; padding-right: 10px; }
+#vis-detail table th { text-align: left; vertical-align: top; padding-right: 30px;}
 
 /*COMIC PANE*/
 #vis-detail #relationship-detail { display:none; }

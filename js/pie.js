@@ -126,6 +126,8 @@ function updateChart() {
 		updateChords(connectionsData);	
 }
 
+/******** PIE ***********
+************************/
 function updatePie(data) {
 	
 	svg.select('#pieBox').attr("class", chartSettings.innerChart);
@@ -197,6 +199,8 @@ function updatePie(data) {
 			horizTransform = -imageWidth;
 		if (i < dataLength/4 || i > (dataLength/2 + dataLength/4)) 
 			vertTransform = -(imageHeight+10);
+		else
+			vertTransform = 15;
 		return "translate(" + horizTransform + "," + vertTransform +")";
 	})
 	.attr("clip-path", function(d) {
@@ -222,6 +226,26 @@ function updatePie(data) {
 			return d.data.name;
 		})
 		.classed("name", true)
+		
+	/* NAME ALONE TEXT */
+	sliceParents.append("text")
+		.attr("text-anchor", function(d, i) {
+			if (i < dataLength/2)
+				return "start";	
+			else
+			 return "end"; 
+		})
+		.text(function(d) {
+			return d.data.name
+		})
+		.attr("transform", function(d, i) {
+			var transformAngle = (180/3.14) * d.startAngle-90;
+			if (i >= dataLength/2) 
+				transformAngle = transformAngle-180;
+			//console.log(transformAngle)
+			return "translate("+textArc.centroid(d)+ ")rotate(" + transformAngle + ")"; 
+		})
+		.attr("class", "name-only")
 	
 		
 	/** SLICE EVENTS **/	
@@ -248,6 +272,17 @@ function updatePie(data) {
 	})
 	
 	sliceParents.on('click', defaultSliceGroupClickHandler)	
+	
+	svg.select("polyline#startLine").remove();
+
+	d3.select("svg")
+		.append('polyline')
+		.attr("id", "startLine")
+		.attr('points', function() {
+			return (width/2) + "," + (height/2) + " " + (width/2)+ ",0";
+		})
+		.attr("stroke", "#000")
+		.attr("stroke-width", "1px")
 };
 
 function defaultSliceGroupClickHandler (d) {
@@ -260,6 +295,9 @@ function defaultSliceGroupClickHandler (d) {
 		sliceParents.classed('selected', false);
 		nodeSelection.classed('selected', !selectedState);
 }
+
+/******** CHORDS ***********
+************************/
 
 function updateChords(connections) {
 	//only create paths for slices that exist in curr view
@@ -420,22 +458,52 @@ function updateChords(connections) {
 	})	
 }
 
+/******** BARS ***********
+************************/
+
+var barRefs = [.875, .75, .625, .5];
 function updateBars(data) {
-	var barScale= d3.scale.linear( )
-		.domain(d3.extent(data, function(d) { return d.barchart[chartSettings.barchart] } ))
+	var barRange = d3.extent(data, function(d) { return d.barchart[chartSettings.barchart] } )
+	var barScale= d3.scale.linear()
+		.domain(barRange)
 		.range([1, 0.5])
 	
-	var bars = svg.select('#barsBox').selectAll('path').data(pie(data), pieKey)
+	/* REFERENCE LINES */
+	var bTicks = barScale.ticks(5);
+	if (bTicks[0] == 0)
+		bTicks.shift();
+	
+	var refCircles = svg.select('#barsBox').selectAll("circle.refLine").data(bTicks)
+	refCircles
+		.enter()
+		.append("circle")
+		.attr("class", "refLine")
+		
+	refCircles
+		.attr("r", function(d) {
+			return innerPieRadius*barScale(d);	
+		})
+		
+	refCircles.exit().remove()
+	
+	/* BARS */	
+	var bars = svg.select('#barsBox').selectAll('g').data(pie(data), pieKey)
 	
 	bars
 		.enter()
-		.append("path")
-		.attr("class", "barSlice")
+		.append("g")
+		//.attr("class", "barGroup")
 		.attr("id", function(d) {
 			return "bar-" + d.data.character_id;
 		})
-	
-	bars
+		.append("path")
+		.attr("class", "barSlice")
+		/*.attr("id", function(d) {
+			return "bar-" + d.data.character_id;
+		})*/
+		
+
+	bars.select("path.barSlice")
 		.transition()
 		.duration(600)
 		.attr('d', function(d) {
@@ -443,10 +511,56 @@ function updateBars(data) {
 				.innerRadius(innerPieRadius*barScale(d.data.barchart[chartSettings.barchart]))
 				.outerRadius(innerPieRadius);
 			return dynamicArc(d);
+		})		
+	
+	/* BAR LABELS */		
+	bars
+		.append("text")
+		.attr("class", "bar-label")
+		
+	bars.select("text.bar-label")
+		.transition()
+		.duration(600)
+		.attr("text-anchor", function(d, i) {
+			if (i < dataLength/2)
+				return "start";	
+			else
+			 return "end"; 
 		})
-		
-		
+		.text(function(d) {
+			return d.data.barchart[chartSettings.barchart];
+		})
+		.attr("transform", function(d, i) {
+			var transformAngle = (180/3.14) * d.startAngle-90;
+			if (i >= dataLength/2) 
+				transformAngle = transformAngle-180;
+			
+			var dynamicArcBound = innerPieRadius*barScale(d.data.barchart[chartSettings.barchart]) - 20;			
+			var dynamicArc = d3.svg.arc()
+				.innerRadius(dynamicArcBound)
+				.outerRadius(dynamicArcBound);
+				
+			return "translate("+dynamicArc.centroid(d)+ ")rotate(" + transformAngle + ")"; 
+		})
+	
 	bars.exit().remove();
+	
+	/*REFERENCE TICKS*/	
+	var refNums = svg.select('#barsBox').selectAll("text.ref").data(bTicks)
+	
+	refNums
+		.enter()
+		.append("text")
+		.attr("class", "ref")
+		//.attr("text-anchor", "middle")
+	
+	refNums
+		.text(function(d) { return d })
+		.attr("y", function(d) {
+			return -(barScale(d)*innerPieRadius);
+		})
+	
+	refNums.exit().remove()
 	
 	/*** EVENTS ***/
 	
@@ -462,8 +576,8 @@ function updateBars(data) {
 	})
 	
 	bars.on('click', function(d) {
-		defaultSliceGroupClickHandler(d);
 		sliceParentsBarClickHandler(d);
+		defaultSliceGroupClickHandler(d);
 	})
 	
 	/* Pie Events */
@@ -483,8 +597,7 @@ function updateBars(data) {
 function sliceParentsBarClickHandler(d) {
 	var charID = d.data.character_id;
 	var selectedStateNow = svg.select('#sliceGroup-'+charID).classed('selected');
-	svg.selectAll('#barsBox path.barSlice').classed('selected', false);
+	svg.selectAll('#barsBox path.barSlice').classed('selected', false);	
 	svg.select('#bar-'+charID).classed('selected', selectedStateNow);
-	
 }
 
