@@ -13,6 +13,19 @@ function populateDetailCard(fChar) {
 		else
 			return fChar.bio_desc;
 	});
+	$('#vis-detail #title-box').css('background-color', function() {
+		var d = {}
+		d.data = fChar;
+		switch (chartSettings.colorCode) {
+			case 'neutral': 
+				return '#666';
+				break;
+			case 'gender':
+				return colCodeGender(d)
+				break;	
+		}
+	})
+	
 	$('#vis-detail #detail-image').attr('src', function() {
 		return generateImageLink(fChar.image, "portrait_medium")
 	});

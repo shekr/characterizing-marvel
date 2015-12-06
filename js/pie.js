@@ -56,10 +56,10 @@ svg.select("g#pieBox").attr("transform", "translate(" + bounds.width/2 + "," + b
 /* KEY FUNCS */
 var pieKey = function(d){ return d.data.character_id; };
 var chordKey = function(d, i) {
-	if (d.id1 == Math.min(d.id1, d.id2))
-		return d.id1 +  '-' + d.id2
+	if (d.cid1 == Math.min(d.cid1, d.cid2))
+		return d.cid1 +  '-' + d.cid2
 	else
-		return d.id2 +  '-' + d.id1
+		return d.cid2 +  '-' + d.cid1
 }
 var barKey = function(d) { return 'bar'+d.data.character_id }
 
@@ -122,8 +122,10 @@ function updateChart() {
 	updatePie(characterData)
 	if (chartSettings.innerChart == 'bars')
 		updateBars(characterData);
-	else
-		updateChords(connectionsData);	
+	else {
+			getConnectionsFakeData(0); //DELETE ME WHEN STANDARD CONNECTIONS DONE
+		updateChords(connectionsData);
+	}
 }
 
 /******** PIE ***********
@@ -200,7 +202,7 @@ function updatePie(data) {
 		if (i < dataLength/4 || i > (dataLength/2 + dataLength/4)) 
 			vertTransform = -(imageHeight+10);
 		else
-			vertTransform = 15;
+			vertTransform = 10;
 		return "translate(" + horizTransform + "," + vertTransform +")";
 	})
 	.attr("clip-path", function(d) {
@@ -271,7 +273,17 @@ function updatePie(data) {
 		}
 	})
 	
-	sliceParents.on('click', defaultSliceGroupClickHandler)	
+	sliceParents.on('click', function(d) {
+		var charID = d.data.character_id;
+		var sliceParents = d3.selectAll('#pieSliceBox > g');
+		var nodeSelection = svg.select('#sliceGroup-'+charID);
+		var selectedState = nodeSelection.classed('selected');
+		
+		//turn all selected off
+		if (chartSettings.innerChart != 'bars')
+			sliceParents.classed('selected', false);
+		nodeSelection.classed('selected', !selectedState);
+	})	
 	
 	svg.select("polyline#startLine").remove();
 
@@ -285,64 +297,40 @@ function updatePie(data) {
 		.attr("stroke-width", "1px")
 };
 
-function defaultSliceGroupClickHandler (d) {
-		var charID = d.data.character_id;
-		var sliceParents = d3.selectAll('#pieSliceBox > g');
-		var nodeSelection = svg.select('#sliceGroup-'+charID);
-		var selectedState = nodeSelection.classed('selected');
-		
-		//turn all selected off
-		sliceParents.classed('selected', false);
-		nodeSelection.classed('selected', !selectedState);
-}
-
 /******** CHORDS ***********
 ************************/
 
 function updateChords(connections) {
 	//only create paths for slices that exist in curr view
-	var existingConnections = [];
+	var positionalConnections = [];
 	var charIndices = characterData.map(function(x) {return x.character_id; });
 	for (var j = 0; j < connections.length; j++) {
-		var currConex = connections[j];
-		var slice1 = svg.select('#sliceGroup-' + currConex.id1);
-		var slice2 = svg.select('#sliceGroup-' + currConex.id2);
-		if (slice1.size() + slice2.size() > 1) {
-			//add in index of their slices so that when either moves, triggers update in data
-			currConex.sIndex1 = charIndices.indexOf(currConex.id1)
-			currConex.sIndex2 = charIndices.indexOf(currConex.id2)
-			existingConnections.push(connections[j]);
-		}
-	}	
+		//add in index of their slices so that when either moves, triggers update in data
+		connections[j].sIndex1 = charIndices.indexOf(connections[j].cid1)
+		connections[j].sIndex2 = charIndices.indexOf(connections[j].cid2)
+		positionalConnections.push(connections[j]);
+	}
 	
-	var chords = svg.select('#chordsBox').selectAll("path").data(existingConnections, chordKey)
+	/* CREAT CHORDS */
+	var chords = svg.select('#chordsBox').selectAll("path").data(positionalConnections, chordKey)
 	chords.exit().remove()
 
 	chords
 		.enter()
 		.append("path")
 		.attr("class", function(d) {
-			console.log('should be enter only');
-			var classes = 'chord-'+ Math.min(d.id1, d.id2) + ' ' + 'chord-'+ Math.max(d.id1, d.id2);
+			var classes = 'chord-'+ Math.min(d.cid1, d.cid2) + ' ' + 'chord-'+ Math.max(d.cid1, d.cid2);
 			if (d.type != "standard")
 				classes += ' core';
 			return classes;
-		})
-		.classed('selected', function(d) {
-			if (svg.select('#sliceGroup-' + d.id1 + '.selected').size() > 0 || svg.select('#sliceGroup-' + d.id2+'.selected').size() > 0)
-				return true;
-			else
-				return false;
 		})
 		
 	chords
 		.transition()
 		.duration(600)
 		.attr("d", function(d) {
-			console.log('should be getting called');
-			//console.log(svg.select('g.chordsBox path.chord-' + d.id1 + '.chord-' + d.id2).size());
-			var startSliceData = svg.select('#sliceGroup-' + d.id1).datum();
-			var endSliceData = svg.select('#sliceGroup-'  + d.id2).datum();
+			var startSliceData = svg.select('#sliceGroup-' + d.cid1).datum();
+			var endSliceData = svg.select('#sliceGroup-'  + d.cid2).datum();
 			var midPoint = [];
 			var startPoint = insideArc.centroid(startSliceData);
 			var startBuffer = insideArcLineArc.centroid(startSliceData);
@@ -355,15 +343,14 @@ function updateChords(connections) {
 		
 	chords
 		.classed('selected', function(d) {
-			if (svg.select('#sliceGroup-' + d.id1 + '.selected').size() > 0 || svg.select('#sliceGroup-' + d.id2+'.selected').size() > 0)
+			if (svg.select('#sliceGroup-' + d.cid1 + '.selected').size() > 0 || svg.select('#sliceGroup-' + d.cid2+'.selected').size() > 0)
 				return true;
 			else
 				return false;
-		})
-		
+		})		
 	
 	
-	/** EVENTS **/
+	/** CHORD EVENTS **/
 	var sliceParents = svg.selectAll('g#pieSliceBox > g');
 	
 	//swap click handler on PIE slices for one with 3 states
@@ -388,7 +375,7 @@ function updateChords(connections) {
 				nodeSelection.classed('selected', true);
 				svg.select('#chordsBox').selectAll('.core.chord-' + charID).each(function(nodeData) {
 					//add class to slices
-					var connectedCharID = nodeData.id1 == charID ? nodeData.id2 : nodeData.id1
+					var connectedCharID = nodeData.cid1 == charID ? nodeData.cid2 : nodeData.cid1
 					var connSelect = svg.select('#sliceGroup-' + connectedCharID)
 					connSelect.classed('selected-connection', true);
 					
@@ -492,16 +479,11 @@ function updateBars(data) {
 	bars
 		.enter()
 		.append("g")
-		//.attr("class", "barGroup")
 		.attr("id", function(d) {
 			return "bar-" + d.data.character_id;
 		})
 		.append("path")
-		.attr("class", "barSlice")
-		/*.attr("id", function(d) {
-			return "bar-" + d.data.character_id;
-		})*/
-		
+		.attr("class", "barSlice")		
 
 	bars.select("path.barSlice")
 		.transition()
@@ -552,7 +534,6 @@ function updateBars(data) {
 		.enter()
 		.append("text")
 		.attr("class", "ref")
-		//.attr("text-anchor", "middle")
 	
 	refNums
 		.text(function(d) { return d })
@@ -568,16 +549,26 @@ function updateBars(data) {
 	bars.on('mouseover', function(d) {
 		d3.select(this).classed("active", true);
 		svg.select('#sliceGroup-'+d.data.character_id).classed('active', true);
+		populateDetailCard(d.data);
+		d3.select('#vis-detail').classed('viewable', true)
 	})
 	
 	bars.on('mouseout', function(d) {
 		d3.select(this).classed("active", false);
 		svg.select('#sliceGroup-'+d.data.character_id).classed('active', false);
+		selectC = svg.select('#pieBox g.selected');
+		if (selectC.size() > 0) {
+			populateDetailCard(selectC.datum().data);
+		} else {
+			d3.select('#vis-detail').classed('viewable', false);
+		}
 	})
 	
 	bars.on('click', function(d) {
-		sliceParentsBarClickHandler(d);
-		defaultSliceGroupClickHandler(d);
+		var charID = d.data.character_id;
+		var selectedStateNow = d3.select(this).classed("selected")
+		d3.select(this).classed("selected", !selectedStateNow);
+		svg.select('#sliceGroup-'+charID).classed("selected", !selectedStateNow)
 	})
 	
 	/* Pie Events */
@@ -591,13 +582,10 @@ function updateBars(data) {
 		svg.select('#bar-'+d.data.character_id).classed('active', false);
 	})
 	
-	sliceParents.on('click.bars', sliceParentsBarClickHandler);	
+	sliceParents.on('click.bars', function(d) {
+		var charID = d.data.character_id;
+		var selectedStateAfter = d3.select(this).classed('selected');
+		d3.select(this).classed('selected', selectedStateAfter)
+		svg.select('#bar-'+d.data.character_id).classed('selected', selectedStateAfter);	
+	});	
 }
-
-function sliceParentsBarClickHandler(d) {
-	var charID = d.data.character_id;
-	var selectedStateNow = svg.select('#sliceGroup-'+charID).classed('selected');
-	svg.selectAll('#barsBox path.barSlice').classed('selected', false);	
-	svg.select('#bar-'+charID).classed('selected', selectedStateNow);
-}
-

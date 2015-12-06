@@ -52,32 +52,63 @@ function generateImageLink(origLink, newType) {
 /**GET DATA  - NOW USING REAL END POINT**/
 function getData(start) {
 	start = start || 0;
-	$.post( "https://marvelinfovis.herokuapp.com/api/filter/gender/", { gender: "male"})
+	$.ajax( { url: "js/data-static.js", dataType: "json" } /*https://marvelinfovis.herokuapp.com/api/filter/gender/", { gender: "male"}*/)
 	.done(function(data) {
+		//console.log(data)
 		characterData = data.slice(0,dataLength);
 		//console.log(characterData)
 		if (chartSettings.innerChart == 'chords') {
-			getConnectionsData(start);
+			getConnectionsData();
 		} else {
 			getBarData(start);
-		}
-		switch (chartSettings.sorting) {
-			case 'alphabetical':
-				characterData.sort(sortAlpha)
-				break;
-			case 'gender':
-				characterData.sort(sortGender);
-			break;
 		}
 		filterData = getFilterData();
 		/***ANY UPDATES TO THE UI DEPENDENT ON DATA MUST BE CALLED HERE**/
 		
-		updateChart();
+		//updateChart();
+		
 	})	
 }
 
+function innerChartDataDoneCallback() {
+	console.log("CHORDS DATA DONE!*************************************")
+	switch (chartSettings.sorting) {
+		case 'alphabetical':
+			characterData.sort(sortAlpha)
+			break;
+		case 'gender':
+			characterData.sort(sortGender);
+		break;
+	}	
+	updateChart();	
+}
+
+function getConnectionsData() {
+	connectionsData = [];
+	var charIndices = characterData.map(function(x) {return x.character_id; });
+	console.log(charIndices)
+	var returnCount = 0;
+	for (var i = 0; i < dataLength; i++) {
+		var currChar = characterData[i];
+		$.post( "https://marvelinfovis.herokuapp.com/api/connections/", { character_id: currChar.character_id})
+			.done(function(data) {
+				returnCount++
+				for (var j = 0; j < data.length; j++) {
+					//only add exisiting connections
+					if (charIndices.indexOf(data[j].cid2) > -1) {
+						data[j].cid1 = parseInt(data[j].cid1)
+						data[j].cid2 = parseInt(data[j].cid2)
+						connectionsData.push(data[j]);	
+					}
+				}
+				if (returnCount == dataLength-1)
+					innerChartDataDoneCallback()
+			})		
+	}
+}
+
 /** FAKE DATA GENERATORS **/
-function getConnectionsData(startIndex) {
+function getConnectionsFakeData(startIndex) {
 	//create some random connection data
 	var connectionTypes = ["family", "standard", "romantic"];
 	if (startIndex >= 0) {
@@ -86,14 +117,14 @@ function getConnectionsData(startIndex) {
 				var valR = Math.floor(Math.random()*dataLength);
 				if (valR % 200 == 0) {
 					var charConnections = {};
-					charConnections.id1 = characterData[i].character_id;
+					charConnections.cid1 = characterData[i].character_id;
 					var indexR = Math.floor(Math.random()*dataLength);
 					while (indexR == i) {
 						indexR = Math.floor(Math.random()*dataLength);
 					}
-					charConnections.id2 = characterData[indexR].character_id;
+					charConnections.cid2 = characterData[indexR].character_id;
 					var indexConn = Math.floor(Math.random()*connectionTypes.length);
-					charConnections.type = connectionTypes[indexConn];
+					charConnections.type = "standard" //connectionTypes[indexConn];
 					charConnections.instances = Math.ceil(Math.random()*500);
 					connectionsData.push(charConnections);	
 				}
