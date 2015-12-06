@@ -123,7 +123,7 @@ function updateChart() {
 	if (chartSettings.innerChart == 'bars')
 		updateBars(characterData);
 	else {
-			getConnectionsFakeData(0); //DELETE ME WHEN STANDARD CONNECTIONS DONE
+			getConnectionsFakeData(0); //DELETE WHEN STANDARD CONNECTIONS DONE
 		updateChords(connectionsData);
 	}
 }
@@ -311,7 +311,7 @@ function updateChords(connections) {
 		positionalConnections.push(connections[j]);
 	}
 	
-	/* CREAT CHORDS */
+	/* CREATE CHORDS */
 	var chords = svg.select('#chordsBox').selectAll("path").data(positionalConnections, chordKey)
 	chords.exit().remove()
 
@@ -324,6 +324,21 @@ function updateChords(connections) {
 				classes += ' core';
 			return classes;
 		})
+		.style("stroke-width", function(d) {
+			var sWidth = ((d.instances/5) * .25) + .5
+			if (sWidth > 3)
+				return 3;
+			else	
+				return sWidth;
+		})
+		/*.style("opacity", function(d) {
+			//increase opacity .1 for every 5 connections
+			var opacity = ((d.instances / 5) * 0.1) + .5
+			if (opacity > 1)
+				return 1;
+			else	
+				return opacity;
+		})*/
 		
 	chords
 		.transition()
@@ -350,67 +365,26 @@ function updateChords(connections) {
 		})		
 	
 	
-	/** CHORD EVENTS **/
+	/** EVENTS **/
 	var sliceParents = svg.selectAll('g#pieSliceBox > g');
 	
 	//swap click handler on PIE slices for one with 3 states
-	sliceParents.on('click', function(d){
+	sliceParents.on('click', function(d) {
 		var nodeSelection = d3.select(this);
 		var selectedState = nodeSelection.classed('selected');
 		var coreState = nodeSelection.classed('core');
 		var charID = d.data.character_id;
 		
-		//turn all selected off
-		sliceParents.classed('selected', false);
-		svg.selectAll('g.selected-connection').classed('selected-connection', false);
 		if (coreState) {
-			//turn all selection off
+			//it was on core so turn selection off
 			nodeSelection.classed('core', false);
+			nodeSelection.classed('selected', false);
 		}
-		else {
-			if (selectedState) {
-				//turn core on
-				var cDetail = relationshipData[0]; //TODO: replace with API call
+		else { //core was not on
+			//turn on features for core and selected
+			nodeSelection.classed('selected', true);
+			if (selectedState)
 				nodeSelection.classed('core', true);
-				nodeSelection.classed('selected', true);
-				svg.select('#chordsBox').selectAll('.core.chord-' + charID).each(function(nodeData) {
-					//add class to slices
-					var connectedCharID = nodeData.cid1 == charID ? nodeData.cid2 : nodeData.cid1
-					var connSelect = svg.select('#sliceGroup-' + connectedCharID)
-					connSelect.classed('selected-connection', true);
-					
-					//add instances numbers
-					var nameLabel = connSelect.select('.label-box text.name')
-					connSelect.select('.label-box').append('text')
-						.attr("text-anchor", function(d, i) {
-							return nameLabel.attr("text-anchor") 
-						})
-						.text(function(d) {
-							return nodeData.instances;
-						})
-						.attr("y", function(d) {
-							return nameLabel.attr("y") + 10;
-						})
-						.classed("instances", true)
-						
-					//add rollover detail
-					connSelect.select('g.label-box').on('mouseover', function(b) {
-						populateRelationshipCard(nodeSelection.datum().data, connSelect.datum().data, cDetail)
-						$('#vis-detail #relationship-detail').addClass("active");						
-					})
-					
-					d3.select(this).on('mouseover', function(d) {
-						populateRelationshipCard(nodeSelection.datum().data, connSelect.datum().data, cDetail)
-						$('#vis-detail #relationship-detail').addClass("active");						
-					})
-						
-				}); //chords
-				
-			}
-			else {
-				//turn selected on	
-				nodeSelection.classed('selected', true);
-			}
 		}
 	})	
 	
@@ -419,30 +393,108 @@ function updateChords(connections) {
 		var charID = d.data.character_id;
 		if (!d3.select(this).classed("selected-connection"))
 			$('#vis-detail #relationship-detail').removeClass('active');
-		svg.select('#chordsBox').selectAll('.chord-' + charID).classed('active', true);
+		
+		svg.select('#chordsBox').selectAll('.chord-' + charID).each(function(nodeData) {
+			d3.select(this).classed('active', true)
+			var connectedCharID = nodeData.cid1 == charID ? nodeData.cid2 : nodeData.cid1
+			var connSelect = svg.select('#sliceGroup-' + connectedCharID)
+			connSelect.classed('active-connected', true);
+		})
 	})
 	
 	sliceParents.on('mouseout.chord', function(d){
  		//chords
 		var charID = d3.select(this).attr("id").replace('sliceGroup-', '');
-		svg.select('#chordsBox').selectAll('.chord-' + charID).classed('active', false);
+		svg.select('#chordsBox').selectAll('.chord-' + charID).each(function(nodeData) {
+			d3.select(this).classed('active', false);
+			var connectedCharID = nodeData.cid1 == charID ? nodeData.cid2 : nodeData.cid1
+			var connSelect = svg.select('#sliceGroup-' + connectedCharID)
+			connSelect.classed('active-connected', false);
+		})
 	})
 	
-	sliceParents.on('click.chord', function(d){
+	/** CHORD-SPECIFIC EVENTS **/
+	sliceParents.on('click.chord', function(d) {
 		//detection is diff bc slice has already changed classes
 		var nodeSelection = d3.select(this);
 		var selectedStateNow = nodeSelection.classed('selected');
 		var coreStateNow = nodeSelection.classed('core');
-		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
+		var charID = d.data.character_id;
+		//console.log('selected:' + selectedStateNow + ' core:' + coreStateNow) 
+		
+		var connectedChords = svg.select('#chordsBox').selectAll('.chord-' + charID);
+		
+		if (selectedStateNow) {
+			connectedChords.each(function(nodeData) {
+					d3.select(this).classed('selected', true)
+					//add class to slices
+					var connectedCharID = nodeData.cid1 == charID ? nodeData.cid2 : nodeData.cid1
+					var connSelect = svg.select('#sliceGroup-' + connectedCharID)
+					connSelect.classed('selected-connection', true);
+					//console.log(connectedCharID)
+					
+					if (coreStateNow) {	
+						//class the CORE connected slices
+						if (d3.select(this).classed('core'))
+							connSelect.classed('selected-connection-core', true)
+						else
+							connSelect.classed('selected-connection', false)
+						
+						//class the chords correctly
+						if (d3.select(this).classed('core')) {
+							d3.select(this).classed('core-selected', true)
+							//add instances numbers only to core connections
+							var nameLabel = connSelect.select('.label-box text.name')
+							connSelect.select('.label-box').append('text')
+								.attr("text-anchor", function(d, i) {
+									return nameLabel.attr("text-anchor") 
+								})
+								.text(function(d) {
+									return nodeData.instances;
+								})
+								.attr("y", function(d) {
+									return nameLabel.attr("y") + 10;
+								})
+								.classed("instances", true)		
+						}
+						else {
+							if (!connSelect.classed('selected'))
+								d3.select(this).classed('selected', false);
+						}
+					}
+					
+					var cDetail = relationshipData[0]; //TODO: replace with API call
+					//add rollover detail
+					connSelect.select('g.label-box').on('mouseover', function(b) {
+						populateRelationshipCard(nodeSelection.datum().data, connSelect.datum().data, cDetail)
+						$('#vis-detail #relationship-detail').addClass("active");						
+					})						
+			})
+		}
+		else {
+			//turn all selection off
+			connectedChords.each(function(nodeData) {
+				var connectedCharID = nodeData.cid1 == charID ? nodeData.cid2 : nodeData.cid1
+				var connSelect = svg.select('#sliceGroup-' + connectedCharID)
+				//console.log(connectedCharID+ ' ' + connSelect.classed('selected'))
+				if (!connSelect.classed('selected')) {
+					//turn off chord and slice
+					connSelect.classed('selected-connection', false)
+					connSelect.classed('selected-core-connection', false)
+					d3.select(this).classed('selected', false).classed('core-selected', false)
+				}			
+			})
+		}
+	})
 		
 		//turn all selected off
-		svg.select('#chordsBox').selectAll('path').classed('selected', false).classed('core-selected', false)
+		/*svg.select('#chordsBox').selectAll('path').classed('selected', false).classed('core-selected', false)
 		if (coreStateNow && selectedStateNow) //turn core on
 			svg.select('#chordsBox').selectAll('.core.chord-' + charID).classed('core-selected', true);			
 		if (!coreStateNow && selectedStateNow) //turn selected on	
-			svg.select('#chordsBox').selectAll('.chord-' + charID).classed('selected', true);
+			svg.select('#chordsBox').selectAll('.chord-' + charID).classed('selected', true);*/
 
-	})	
+
 }
 
 /******** BARS ***********

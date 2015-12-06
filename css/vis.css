@@ -26,30 +26,33 @@ body {
 /* SLICES */
 #vis-pie path.slice { stroke: #ccc; stroke-width: 1px; }
 #vis-pie .active path.slice, #vis-pie .selected path.slice  { fill: #f5ee31 !important; }
-#vis-pie .selected-connection path.slice { stroke: #f5ee31; stroke-width: 2px; }
+#vis-pie .selected.core path.slice { fill: #9579b8 !important; }
+#vis-pie .selected-connection path.slice, #vis-pie .active-connected path.slice { stroke: #f5ee31; stroke-width: 2px; }
 
 /* LABELS */
 #vis-pie g.label-box  { display:none; }
 /*#vis-pie #pieSliceBox > g:nth-child(5n) g.label-box  { display:block; }*/
-#vis-pie .active g.label-box, #vis-pie .selected g.label-box, #vis-pie .selected-connection g.label-box { display:block; }
+#vis-pie .active g.label-box, #vis-pie .selected g.label-box, #vis-pie .selected-connection-core g.label-box { display:block; }
 #vis-pie text { font-size: 11px; dominant-baseline: middle; }
 #vis-pie text.instances { fill: #7B38CF; }
 #vis-pie text.name-only { display: none; }
+/*#vis-pie .active-connected text.name-only, #vis-pie .selected-connection text.name-only { display: block; }
+#vis-pie text.name-only, #vis-pie .active.active-connected text.name-only, #vis-pie .selected.active-connected text.name-only, #vis-pie .selected.selected-connection text.name-only, #vis-pie .active.selected-connection text.name-only, #vis-pie .selected-connected-core text.name-only { display: none; }*/
 
 /* CHORDS */
 #vis-pie #chordsBox, #vis-pie #barsBox { display: none; }
 #vis-pie #pieBox.chords #chordsBox, #vis-pie #pieBox.bars #barsBox { display: block; }
 #vis-pie #chordsBox path {
-	stroke: #666;
-	opacity: .2;
-	stroke-width: 1px;
+	stroke: #111;
+	/*stroke-width: 1px;*/
+	opacity: .6;
 	fill:none;
 	display:none;
 }
-#vis-pie #chordsBox path.core { stroke-width: 2px; stroke: #7B38CF; }
+#vis-pie #chordsBox path.core, #vis-pie #chordsBox path.core.selected { stroke: #7B38CF; }
 #vis-pie #chordsBox path.active, #vis-pie #chordsBox path.selected, #vis-pie #chordsBox path.core-selected { display:block; }
-#vis-pie #chordsBox path.selected { stroke: #000; opacity: .8; }
-#vis-pie #chordsBox path.core-selected { stroke: #7B38CF; opacity: .8; }
+#vis-pie #chordsBox path.selected { stroke: #000; }
+#vis-pie #chordsBox path.core-selected { stroke: #7B38CF; }
 
 /* BARS */
 #vis-pie #barsBox circle.refLine { stroke: #cdf4ff; stroke-width: 1px; fill: none; }

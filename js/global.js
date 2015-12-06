@@ -4,7 +4,7 @@
 */
 
 /* GLOBAL VARS */
-var dataLength = 200;
+var dataLength = 100;
 
 var characterData = [];
 var connectionsData = [];
@@ -15,6 +15,7 @@ chartSettings.innerChart = 'chords';
 chartSettings.barchart = 'appearances';
 chartSettings.colorCode = 'neutral';
 chartSettings.sorting = 'alphabetical';
+chartSettings.coreMode = false;
 
 /* SORT AND COLOR-CODE FUNCS */
 function sortAlpha(a,b) {  
@@ -125,7 +126,7 @@ function getConnectionsFakeData(startIndex) {
 					charConnections.cid2 = characterData[indexR].character_id;
 					var indexConn = Math.floor(Math.random()*connectionTypes.length);
 					charConnections.type = "standard" //connectionTypes[indexConn];
-					charConnections.instances = Math.ceil(Math.random()*500);
+					charConnections.instances = Math.ceil(Math.random()*50);
 					connectionsData.push(charConnections);	
 				}
 			}
