@@ -19,6 +19,8 @@ var availableTags = [];
 var colorOptions =['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
 var appearRange =[];
 var yearRange =[];
+var autoSuggestData = [];
+
 /* SORT AND COLOR-CODE FUNCS */
 function sortAlpha(a,b) {  
 	if (a.name > b.name)
@@ -160,12 +162,22 @@ function getData(start) {
 	.done(function(data) {
 		//console.log(data)
 		characterData = data.slice(0,dataLength);
-		//console.log(characterData)
+		/* CREATE THE DATA FOR SEARCH*/
+		autoSuggestData = [];
+		for (var i = 0; i < dataLength; i++) {
+			var searchItem = {}
+			searchItem.label = characterData[i].name
+			searchItem.value = characterData[i].character_id
+			autoSuggestData[i] = searchItem;	
+		}
+		$( "#search" ).autocomplete( "option", "source", autoSuggestData );
+		
 		if (chartSettings.innerChart == 'chords') {
 			getConnectionsData();
 		} else {
 			getBarData(start);
 		}
+		
 		filterData = getFilterData();
 		
 	})	

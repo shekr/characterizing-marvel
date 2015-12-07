@@ -69,15 +69,29 @@
 
 
 */
-$( document ).ready(function() {
+$( document ).ready(function() { 
+	$( "#search" ).autocomplete({
+		minLength: 0,
+		source: autoSuggestData,
+		autoFocus: true,
+		/*focus: function( event, ui ) {
+			$( "#search" ).val( ui.item.label );
+			return false;
+		},*/
+		select: function( event, ui ) {
+			$("#search").val( ui.item.label );
+			console.log(ui.item.value)		
+			return false;
+		}
+	})
 	
-/* Sorting radio button workaround */ 
-$('.radClick').click(function(){
-	//console.log("click")
-	$(this).children('input').prop('checked', true);
-})
+	/* Sorting radio button workaround */ 
+	$('.radClick').click(function(){
+		//console.log("click")
+		$(this).children('input').prop('checked', true);
+	})
 
-/* Sorting implementation */
+	/* Sorting implementation */
 	$(document).on('change' , '#sortList :radio' , function()
 	{
 		var option = $(this).next("label").text();

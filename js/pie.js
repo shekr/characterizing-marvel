@@ -54,6 +54,10 @@ var arcLine = d3.svg.line()
     .interpolate("bundle")
 	.tension(.7);
 	
+var chordBufferScale = d3.scale.linear()
+	.domain([0, 2*Math.PI])
+	.range([.85, 0.65])
+	
 svg.attr("x", (bounds.width - width)/2).attr("y", (bounds.height-height)/2)
 svg.select("g#pieBox").attr("transform", "translate(" + bounds.width/2 + "," + bounds.height/ 2 + ")");
 
@@ -400,6 +404,8 @@ function updateChords(connections) {
 			else	
 				return opacity;
 		})*/
+	
+
 		
 	chords
 		.transition()
@@ -408,10 +414,18 @@ function updateChords(connections) {
 			var startSliceData = svg.select('#sliceGroup-' + d.cid1).datum();
 			var endSliceData = svg.select('#sliceGroup-'  + d.cid2).datum();
 			var midPoint = [];
+			var angleChange = Math.abs(startSliceData.startAngle - endSliceData.startAngle)
+			var buffer = chordBufferScale(angleChange)
+			console.log(angleChange + "-" +buffer)
+			var dynamicBufferArc = d3.svg.arc()
+					.outerRadius(innerPieRadius*buffer)
+					.innerRadius(innerPieRadius*buffer);
+			
 			var startPoint = insideArc.centroid(startSliceData);
-			var startBuffer = insideArcLineArc.centroid(startSliceData);
-			var endBuffer = insideArcLineArc.centroid(endSliceData);
+			var startBuffer = dynamicBufferArc.centroid(startSliceData);
+			var endBuffer = dynamicBufferArc.centroid(endSliceData);
 			var endPoint = insideArc.centroid(endSliceData);
+			
 			midPoint[0] = (endBuffer[0] + startBuffer[0])/2;
 			midPoint[1] = (endBuffer[1] + startBuffer[1])/2;	
 			return arcLine([startPoint, startBuffer, midPoint, endBuffer, endPoint]);			
