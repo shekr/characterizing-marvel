@@ -20,6 +20,8 @@ var imageHeight = 60;
 var imageWidth = 60;
 
 var lastSelectedDetailChar;
+var transitionLong = 1000;
+var transitionShort = 500;
 
 var pie = d3.layout.pie()
 	.value(function(d) {
@@ -65,6 +67,11 @@ var chordKey = function(d, i) {
 }
 var barKey = function(d) { return 'bar'+d.data.character_id }
 
+/* UTILITY FUNCS */
+function midAngle(d){
+	return d.startAngle + (d.endAngle - d.startAngle)/2;
+}
+
 svg.select('#pieBox').classed(chartSettings.innerChart, true);
 
 /*** FILTER EXAMPLE IMPLEMENTATION ***/
@@ -84,7 +91,7 @@ $('#color-coder').click(function() {
 	chartSettings.colorCode = 'gender';
 	svg.selectAll('#pieSliceBox path.slice')
 		.transition()
-		.duration(300)
+		.duration(transitionShort)
 		.style("fill", colCodeGender)
 	return false;
 })
@@ -170,8 +177,18 @@ function updatePie(data) {
 	sliceParents.sort();	
 	sliceParents.select('path.slice')
 		.transition()
-		.duration(600)
-		.attr('d', arc);
+		.ease(d3.ease("quad-in-out"))
+		.duration(transitionLong)
+		.attrTween("d", function(d) {
+			//console.log(this._current)
+			this._current = this._current || d;
+			var interpolate = d3.interpolate(this._current, d);
+			this._current = interpolate(0);			
+			return function(t) {
+				return arc(interpolate(t));
+			};
+		})
+		//.attr('d', arc);
 		
 	sliceParents.exit().remove()
 	
@@ -183,10 +200,20 @@ function updatePie(data) {
 	
 	labelBoxes
 	.transition()
-	.duration(600)
-	.attr("transform", function(d) {
-		return "translate(" + textArc.centroid(d) + ")";
+	.ease(d3.ease("quad-in-out"))
+	.duration(transitionLong)
+	.attrTween("transform", function(d) {
+			this._current = d3.select(this.parentNode).select("path.slice").node()._current || d;
+			var interpolate = d3.interpolate(this._current, d);
+			this._current = interpolate(0);
+			return function(t) {
+				//console.log(d.data.name+" translate("+ textArc.centroid(interpolate(t)) + ")")
+				return "translate("+ textArc.centroid(interpolate(t)) + ")";
+		};
 	})
+	/*.attr("transform", function(d) {
+		return "translate(" + textArc.centroid(d) + ")";
+	})*/
 	
 	/* OUTLINE BUBBLE */
 	labelBoxes
@@ -294,7 +321,6 @@ function updatePie(data) {
 		//slice and label
     	var nodeSelection = d3.select(this);
 		nodeSelection.classed('active', false);
-	console.log(lastSelectedDetailChar);
 		if (lastSelectedDetailChar != null) {
 			populateDetailCard(svg.select('#sliceGroup-' + lastSelectedDetailChar).datum().data);
 		} else {
@@ -377,7 +403,7 @@ function updateChords(connections) {
 		
 	chords
 		.transition()
-		.duration(600)
+		.duration(transitionLong)
 		.attr("d", function(d) {
 			var startSliceData = svg.select('#sliceGroup-' + d.cid1).datum();
 			var endSliceData = svg.select('#sliceGroup-'  + d.cid2).datum();
@@ -598,13 +624,24 @@ function updateBars(data) {
 
 	bars.select("path.barSlice")
 		.transition()
-		.duration(600)
-		.attr('d', function(d) {
+		.duration(transitionLong)
+		.attrTween("d", function(d) {
+			this._current = this._current || d;
+			var interpolate = d3.interpolate(this._current, d);
+			this._current = interpolate(0);
+			var dynamicArc = d3.svg.arc()
+			.innerRadius(innerPieRadius*barScale(d.data.barchart[chartSettings.barchart]))
+			.outerRadius(innerPieRadius);
+			return function(t) {
+				return dynamicArc(interpolate(t));
+			};
+		})
+		/*.attr('d', function(d) {
 			var dynamicArc = d3.svg.arc()
 				.innerRadius(innerPieRadius*barScale(d.data.barchart[chartSettings.barchart]))
 				.outerRadius(innerPieRadius);
 			return dynamicArc(d);
-		})		
+		})*/		
 	
 	/* BAR LABELS */		
 	bars
@@ -613,7 +650,7 @@ function updateBars(data) {
 		
 	bars.select("text.bar-label")
 		.transition()
-		.duration(600)
+		.duration(transitionLong)
 		.attr("text-anchor", function(d, i) {
 			if (i < dataLength/2)
 				return "start";	
@@ -623,7 +660,7 @@ function updateBars(data) {
 		.text(function(d) {
 			return d.data.barchart[chartSettings.barchart];
 		})
-		.attr("transform", function(d, i) {
+		/*.attr("transform", function(d, i) {
 			var transformAngle = (180/3.14) * d.startAngle-90;
 			if (i >= dataLength/2) 
 				transformAngle = transformAngle-180;
@@ -634,6 +671,23 @@ function updateBars(data) {
 				.outerRadius(dynamicArcBound);
 				
 			return "translate("+dynamicArc.centroid(d)+ ")rotate(" + transformAngle + ")"; 
+		})*/
+		.attrTween("transform", function(d, i) {
+				this._current = this._current || d;
+				var interpolate = d3.interpolate(this._current, d);
+				this._current = interpolate(0);
+				var transformAngle = (180/3.14) * d.startAngle-90;
+				if (i >= dataLength/2) 
+					transformAngle = transformAngle-180;
+				
+				var dynamicArcBound = innerPieRadius*barScale(d.data.barchart[chartSettings.barchart]) - 20;			
+				var dynamicArc = d3.svg.arc()
+					.innerRadius(dynamicArcBound)
+					.outerRadius(dynamicArcBound);
+				return function(t) {
+					//console.log(d.data.name+" translate("+ textArc.centroid(interpolate(t)) + ")")
+					return "translate("+dynamicArc.centroid(interpolate(t))+ ")rotate(" + transformAngle + ")"
+			};
 		})
 	
 	bars.exit().remove();
