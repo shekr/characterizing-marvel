@@ -70,19 +70,31 @@
 
 */
 $( document ).ready(function() { 
+	/* SEARCH AUTOCOMPLETE */
 	$( "#search" ).autocomplete({
 		minLength: 0,
 		source: autoSuggestData,
 		autoFocus: true,
-		/*focus: function( event, ui ) {
-			$( "#search" ).val( ui.item.label );
-			return false;
-		},*/
 		select: function( event, ui ) {
 			$("#search").val( ui.item.label );
-			console.log(ui.item.value)		
+			if (chartSettings.innerChart == 'bars') {
+				svg.select("#bar-"+ui.item.value).each(barClick)
+			} else if (chartSettings.innerChart == 'chords') {
+				svg.select("#sliceGroup-"+ui.item.value).each(sliceClick).each(chordClick)
+			}
 			return false;
 		}
+	})
+	
+	$("#searchClear").click(function(){
+    	$("#search").val('');
+	});
+	
+	/* CLEAR ALL SELECTIONS */
+	$('#clearer').click(function() {
+		svg.selectAll('#pieSliceBox > g, #chordsBox path, #barsBox > g').classed('selected', false).classed('core-selected', false).classed('selected-connection', false).classed('selected-connection-core', false);
+		svg.selectAll('#pieSliceBox > g.core').classed('core', false);
+		$('#vis-detail').removeClass("viewable");
 	})
 	
 	/* Sorting radio button workaround */ 

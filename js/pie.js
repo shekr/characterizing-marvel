@@ -79,12 +79,6 @@ function midAngle(d){
 svg.select('#pieBox').classed(chartSettings.innerChart, true);
 
 /*** FILTER EXAMPLE IMPLEMENTATION ***/
-$('#clearer').click(function() {
-	svg.selectAll('#pieSliceBox > g, #chordsBox path, #barsBox > g').classed('selected', false).classed('core-selected', false).classed('selected-connection', false).classed('selected-connection-core', false);
-	svg.selectAll('#pieSliceBox > g.core').classed('core', false);
-	$('#vis-detail').removeClass("viewable");
-})
-
 $('#sorter').click(function() {
 	chartSettings.sorting = 'gender';
 	characterData.sort(sortGender)
@@ -184,7 +178,6 @@ function updatePie(data) {
 		.ease(d3.ease("quad-in-out"))
 		.duration(transitionLong)
 		.attrTween("d", function(d) {
-			//console.log(this._current)
 			this._current = this._current || d;
 			var interpolate = d3.interpolate(this._current, d);
 			this._current = interpolate(0);			
@@ -211,7 +204,6 @@ function updatePie(data) {
 			var interpolate = d3.interpolate(this._current, d);
 			this._current = interpolate(0);
 			return function(t) {
-				//console.log(d.data.name+" translate("+ textArc.centroid(interpolate(t)) + ")")
 				return "translate("+ textArc.centroid(interpolate(t)) + ")";
 		};
 	})
@@ -305,7 +297,6 @@ function updatePie(data) {
 			var transformAngle = (180/3.14) * d.startAngle-90;
 			if (i >= dataLength/2) 
 				transformAngle = transformAngle-180;
-			//console.log(transformAngle)
 			return "translate("+textArc.centroid(d)+ ")rotate(" + transformAngle + ")"; 
 		})
 		.attr("class", "name-only")
@@ -336,7 +327,6 @@ function updatePie(data) {
 		var charID = d.data.character_id;
 		var nodeSelection = svg.select('#sliceGroup-'+charID);
 		var selectedState = nodeSelection.classed('selected');
-		console.log(selectedState)
 		//turn all selected off
 		if (chartSettings.innerChart != 'bars')
 			sliceParents.classed('selected', false);
@@ -416,7 +406,6 @@ function updateChords(connections) {
 			var midPoint = [];
 			var angleChange = Math.abs(startSliceData.startAngle - endSliceData.startAngle)
 			var buffer = chordBufferScale(angleChange)
-			console.log(angleChange + "-" +buffer)
 			var dynamicBufferArc = d3.svg.arc()
 					.outerRadius(innerPieRadius*buffer)
 					.innerRadius(innerPieRadius*buffer);
@@ -444,27 +433,7 @@ function updateChords(connections) {
 	var sliceParents = svg.selectAll('g#pieSliceBox > g');
 	
 	//swap click handler on PIE slices for one with 3 states
-	sliceParents.on('click', function(d) {
-		var nodeSelection = d3.select(this);
-		var selectedState = nodeSelection.classed('selected');
-		var coreState = nodeSelection.classed('core');
-		var charID = d.data.character_id;
-		
-		if (coreState) {
-			//it was on core so turn selection off
-			nodeSelection.classed('core', false);
-			nodeSelection.classed('selected', false);
-			if (lastSelectedDetailChar == charID)
-				lastSelectedDetailChar = null;	
-		}
-		else { //core was not on
-			//turn on features for core and selected
-			nodeSelection.classed('selected', true);
-			lastSelectedDetailChar = charID;
-			if (selectedState)
-				nodeSelection.classed('core', true);
-		}
-	})	
+	sliceParents.on('click', sliceClick)	
 	
 	sliceParents.on('mouseover.chord', function(d){
 		//chords
@@ -492,14 +461,37 @@ function updateChords(connections) {
 	})
 	
 	/** CHORD-SPECIFIC EVENTS **/
-	sliceParents.on('click.chord', function(d) {
+	sliceParents.on('click.chord', chordClick)
+}
+
+function sliceClick(d){
+		var nodeSelection = d3.select(this);
+		var selectedState = nodeSelection.classed('selected');
+		var coreState = nodeSelection.classed('core');
+		var charID = d.data.character_id;
+		
+		if (coreState) {
+			//it was on core so turn selection off
+			nodeSelection.classed('core', false);
+			nodeSelection.classed('selected', false);
+			if (lastSelectedDetailChar == charID)
+				lastSelectedDetailChar = null;	
+		}
+		else { //core was not on
+			//turn on features for core and selected
+			nodeSelection.classed('selected', true);
+			lastSelectedDetailChar = charID;
+			if (selectedState)
+				nodeSelection.classed('core', true);
+		}
+}
+function chordClick(d) {
 		//detection is diff bc slice has already changed classes
 		var nodeSelection = d3.select(this);
 		var selectedStateNow = nodeSelection.classed('selected');
 		var coreStateNow = nodeSelection.classed('core');
 		var charID = d.data.character_id;
-		//console.log('selected:' + selectedStateNow + ' core:' + coreStateNow) 
-		
+				
 		var connectedChords = svg.select('#chordsBox').selectAll('.chord-' + charID);
 		
 		if (selectedStateNow) { //now we're selected
@@ -509,7 +501,6 @@ function updateChords(connections) {
 					var connectedCharID = nodeData.cid1 == charID ? nodeData.cid2 : nodeData.cid1
 					var connSelect = svg.select('#sliceGroup-' + connectedCharID)
 					connSelect.classed('selected-connection', true);
-					//console.log(connectedCharID)
 					
 					if (coreStateNow) {	
 						//class the CORE connected slices
@@ -587,7 +578,6 @@ function updateChords(connections) {
 
 			})
 		}
-	})
 }
 
 /******** BARS ***********
@@ -699,7 +689,6 @@ function updateBars(data) {
 					.innerRadius(dynamicArcBound)
 					.outerRadius(dynamicArcBound);
 				return function(t) {
-					//console.log(d.data.name+" translate("+ textArc.centroid(interpolate(t)) + ")")
 					return "translate("+dynamicArc.centroid(interpolate(t))+ ")rotate(" + transformAngle + ")"
 			};
 		})
@@ -755,12 +744,7 @@ function updateBars(data) {
 		}
 	})
 	
-	bars.on('click', function(d) {
-		var charID = d.data.character_id;
-		var selectedStateNow = d3.select(this).classed("selected")
-		d3.select(this).classed("selected", !selectedStateNow);
-		svg.select('#sliceGroup-'+charID).classed("selected", !selectedStateNow)
-	})
+	bars.on('click', barClick)
 	
 	/* Pie Events */
 	var sliceParents = svg.selectAll('g#pieSliceBox > g');
@@ -779,4 +763,12 @@ function updateBars(data) {
 		d3.select(this).classed('selected', selectedStateAfter)
 		svg.select('#bar-'+d.data.character_id).classed('selected', selectedStateAfter);	
 	});	
+}
+
+function barClick(d) {
+		var charID = d.data.character_id;
+		var selectedStateNow = d3.select(this).classed("selected")
+		d3.select(this).classed("selected", !selectedStateNow);
+		svg.select('#sliceGroup-'+charID).classed("selected", !selectedStateNow)
+
 }

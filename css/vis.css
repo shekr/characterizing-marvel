@@ -113,6 +113,8 @@ body {
 #vis-controls .sidebar {
   display: none;
 }
+#searchClear:hover { cursor: pointer; }
+
 @media (min-width: 768px) {
 #vis-controls   .sidebar {
     position: fixed;

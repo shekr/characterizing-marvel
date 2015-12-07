@@ -32,18 +32,26 @@
         <div class="row">
             <div id="vis-controls" class="component col-sm-3 col-md-2 sidebar">
                 <h4>Control Panel</h4>
-                 <div class="panel">
-                       <input id="search" type="text" class="form-control" placeholder="Search your hero or villain..."> 
-                </div>
                 <div class="panel">
-                    <button id="modechange" type="button" class="btn btn-primary">Connections Mode</button>
-                    <div class="btn-group" role="group" aria-label="...">
-                        <button id="sortAsc" type="button" class="btn btn-default active">
-                            <a href="#"><i class="fa fa-sort-amount-asc fa-fw"></i></a>
-                        </button>
-                        <button id="sortDesc" type="button" class="btn btn-default">
-                            <a href="#"><i class="fa fa-sort-amount-desc fa-fw"></i></a>
-                        </button>
+                	<div class="panel-body">
+                        <p>
+                            <div class="input-group">
+                                   <input id="search" type="search" class="form-control" placeholder="Search your hero or villain..." aria-describedby="searchClear">
+                                   <span id="searchClear" class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                            </div>
+                        </p>
+                        <p><button type="button" class="btn btn-default" id="clearer">Clear Selections</button></p>
+                        <p><button id="modechange" type="button" class="btn btn-primary">Connections Mode</button>
+                        <p>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button id="sortAsc" type="button" class="btn btn-default active">
+                                <a href="#"><i class="fa fa-sort-amount-asc fa-fw"></i></a>
+                            </button>
+                            <button id="sortDesc" type="button" class="btn btn-default">
+                                <a href="#"><i class="fa fa-sort-amount-desc fa-fw"></i></a>
+                            </button>
+                        </div>
+                        </p>
                     </div>
                 </div>
                 <div class="panel-group" id="accordion">
@@ -108,7 +116,6 @@
     <div id="vis-pie" class="component">
         <!-- DELETE THIS FILLER WHEN INTEGRATE WITH FILTER COMPONENT -->
         <div class="btn-group" role="group">
-        <button type="button" class="btn btn-default" id="clearer">Clear All Selections</button>
         <button type="button" class="btn btn-default" id="sorter">Sort!</button>
         <button type="button" class="btn btn-default" id="color-coder">Color code!</button> 
         <button type="button" class="btn btn-default" id="adder">Add More Data!</button>
