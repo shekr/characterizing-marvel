@@ -147,12 +147,13 @@ body {
 
 #vis-controls .fixed-panel {
   min-height: 50px;
-  max-height: 100px;
+  max-height: 400px;
   overflow-y: scroll;
 
 }
-
-.inactive{
-	color: gray;
+#vis-controls .fixed-list {
+  min-height: 50px;
+  max-height: 100%;
+  overflow-y: scroll;
 
 }

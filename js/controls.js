@@ -20,165 +20,326 @@
 	API call TBD
 	Color code to be placed next to selected ctrl option
 	implement search
+	filterOptions.["Attr"].[index].gender = "Female"
+	filterOptions =
+	{
+				"Affiliation": 	["avengers","something else"],
+
+					"Gender": 	[
+									{
+										gender: "Female",
+										number: 56;
+										
+									},
+									{
+										gender: "Male",
+										number: 56;
+										
+									}
+								],
+
+				"Nationality": [
+									{
+										nationality: "American",
+										number: 56;
+									},
+									{
+										nationality: "Japanese",
+										number: 56;
+									}
+								],
+	"Year of Introduction":    [
+									{
+										intro_year: 1995,
+										number: 2
+									},
+									{
+										intro_year: 1939,
+										number: 2
+									}
+								]
+	}
+
+
 
 */
 $( document ).ready(function() {
-  console.log( 'ready!' );
-  updateCtrl();
 
-  $("#filterPane :checkbox").change(function(){
-	/* Send selected control options */
-	console.log("filter");
-    /* Request list of control options and filtered data*/
+	$(document).on('change' , '.checkbox' , function()
+	{
+		var pinType;
+		var ref = $(":checked")
+		//console.log(ref);
+		$('#filterPin').empty();
+		$('#colorPin').empty();
+		$('#sortPin').empty();
+		$.each(ref,function(index, value){
 
-    /* Update list of control options */
-    updateCtrl();
+			if($(ref[index]).hasClass("color"))
+			{
+				pinType = "color";
+			}
+			else if
+				($(ref[index]).hasClass("filter"))
+			{
+				pinType = "filter";
+			}
+			else if($(ref[index]).hasClass("sort"))
+			{
+				pinType = "sort";
+			}
+			if($(ref[index]).hasClass("Affiliation"))
+			{
+				/* post to api*/
+				console.log(value.name);
+				console.log(pinType);
+				pinOption(value.name,pinType);
+				$.post( "https://marvelinfovis.herokuapp.com/api/filter/affiliation/", { "name": value.name})
+				.done(function(data) {
+					parseData(data.length,data);
+					//updateChart();
 
-    /* Update data on vis*/
-    if($(this).attr("checked"))
-    {
-	    dataLength += 20;
-		getData(dataLength);
-		updateChart();
-    }
-    else
-    {
-    	dataLength -= 10;
-		characterData = characterData.slice(0,dataLength);
-		console.log(characterData.length);
-		updateChart();
-       
-    }
+
+				});
+			}
+			if($(ref[index]).hasClass("Nationality"))
+			{
+					/* post to api*/
+				console.log(value.name);
+				pinOption(value.name,pinType);
+				$.post( "https://marvelinfovis.herokuapp.com/api/filter/nationality/", { "name": value.name})
+				.done(function(data) 
+				{
+					parseData(data.length,data);
+					//updateChart();
+
+				});
+			}
+			if($(ref[index]).hasClass("Year of Introduction"))
+			{
+				/* post to api*/
+				console.log(value.name);
+				pinOption(value.name,pinType);
+				$.post( "https://marvelinfovis.herokuapp.com/api/filter/year_introduced/", { year: value.name})
+				.done(function(data) {
+					parseData(data.length,data);
+					//updateChart();
+
+
+				});
+			}
+			if($(ref[index]).hasClass("Gender"))
+			{
+				/* post to api*/
+				console.log(value.name);
+				pinOption(value.name,pinType);
+				$.post( "https://marvelinfovis.herokuapp.com/api/filter/gender/", { gender: value.name})
+				.done(function(data) {
+					console.log(data.length);
+					parseData(data.length,data);
+					chartSettings.colorCode = 'gender';
+					svg.selectAll('#pieSliceBox path.slice')
+					.transition()
+					.duration(300)
+					.style("fill", colCodeGender)
+					//updateChart();
+				});
+			}
+			/*if($(ref[index]).hasClass("Number of Appearances"))
+			{
+				/* post to api
+				console.log(value.name)
+				$.post( "https://marvelinfovis.herokuapp.com/api/filter/appearances/", { "name": value.name})
+				.done(function(data) {
+					console.log(data);
+				});
+			}*/
+		});
 	});
-
-	$("#sortPane:checkbox").change(function(){
-	    /* Send selected control options */
-	    console.log("sort");
-	    /* Request list of control options*/
-
-	    /* Update list of control options*/
-	    updateCtrl();
-
-	    /* Sort data on vis*/
-	    /* Update data on vis 
-	    if($(this).attr("checked"))
-	    {
-	       var sel = $(this).next("label").text(); 
-	       console.log("sort "+ sel);
-	    }
-	    else
-	    {
-	        var unsel = $(this).innerHTML; 
-	        console.log("unsort "+ unsel);
-	    }*/
-	    chartSettings.sorting = 'gender';
-		characterData.sort(sortGender)
-		updateChart(characterData, connectionsData);
-	});
-
-	$("#colorPane :checkbox").change(function(){
-		
-	    /* Send selected control options */
-	    console.log("color");
-	    /* Request list of control options */
-
-	    /* Update list of control options */
-	    updateCtrl();
-
-	    /* Set colors of data on vis
-
-
-	    if($(this).attr("checked"))
-	    {
-	       var sel = $(this).next("label").text(); 
-	       console.log("color "+ sel);
-	    }
-	    else
-	    {
-	        var unsel = $(this).next("label").text(); 
-	        console.log("uncolor "+ unsel);
-	    }*/
-
-		chartSettings.colorCode = 'gender';
-		svg.selectAll('#pieSliceBox path.slice')
-			.transition()
-			.duration(300)
-			.style("fill", colCodeGender)
-		return false;
-	});
- 
 });
 
 
-
-function updateCtrl() 
+function updateFilterOptions() 
 {
-	console.log("update Control options");
-
-	/*Clear previous values*/
+	
+	//console.log(filterData);
+	/*Clear previous values
 
 	$('filterList').empty();
 	$('colorList').empty();
 	$('sortList').empty();
 
 	/*Request Options from API*/
-
-	getFilterData();
-
+	
+	
 	/*Redraw control options depending on filter, sort or color code 
-	by appending collapsibe li elements for each category and sub-category in the controlOptions object*/
+	by appending collapsibe li elements for each category and sub-category in the filterData object*/
+	
+	$('#filterList').empty();
+	$('#colorList').empty();
+	$('#sortList').empty();
+  	$.each(filterData, function( key, val ) {
+  		
+  		
+  		//console.log(key);
+  		switch (key) 
+  		{
+			case "Gender":
+			case "Nationality":
+			case "Number of Appearances":
+					key_id = key.replace(/\s+/g, '');
+					$('#sortList').append("<li><a data-toggle=\"collapse\" data-parent=\"#sortList\" href=\"#sort" + key_id + "\">" + key + "</a><div id=\"sort" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"sortList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
+			    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
+			    	$('#colorList').append("<li><a data-toggle=\"collapse\" data-parent=\"#colorList\" href=\"#color" + key_id + "\">" + key + "</a><div id=\"color" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"colorList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
 
-  	$.each(controlOptions, function( key, val ) {
-  		/*console.log(key);*/
-		if(key == "Gender" || key == "Nationality" || key == "Number of Appearances")
-	    {
-	    	$('#sortList').append("<li><a data-toggle=\"collapse\" data-parent=\"#sortPane\" href=\"#sort" + key + "\">" + key + "</a><div id=\"sort" + key + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"sortList" + key + "\" class=\"nav\"></ul>");
-	    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterPane\" href=\"#filter" + key + "\">" + key + "</a><div id=\"filter" + key + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key + "\" class=\"nav\"></ul>");
-	    	$('#colorList').append("<li><a data-toggle=\"collapse\" data-parent=\"#colorPane\" href=\"#color" + key + "\">" + key + "</a><div id=\"color" + key + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"colorList" + key + "\" class=\"nav\"></ul>");
+				  	$.each(val, function( index, value )
+				  	{
 
-		  	$.each(val.subcategories, function( index, value )
-		  	{
-			    /*console.log(value.subcategory);*/
-			    $('#sortList'+ key).append("<li><div class=\"radio\"> <label> <input type=\"radio\" name=\"optradio\">" + value.subcategory + "</label></div></li><li>");
-			    $('#filterList'+ key).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\">" + value.subcategory + "</label></div></li><li>");
-			    $('#colorList'+ key).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\">" + value.subcategory + "</label></div></li><li>");
-			});	    	
+				  		$.each(value, function ( prop, propVal){
+				  			//console.log(prop);
+				  		
+				  			if(prop == "gender" || prop == "nationality" || prop == "Number of Appearances")
+				  			{
+				  				if($.isNumeric(propVal))
+					    		{
+					    			propVal = propVal.toString();
+					    			console.log(propVal);
+					    		}
+				  				$('#sortList'+ key_id).append("<li><div class=\"radio\"> <label> <input type=\"radio\" name = \"sortopt\" class = \"sort " + key_id + " \"id =\""+ propVal +"\">" + propVal + "</label></div></li>");
+					    		$('#filterList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\"  class = \"filter " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
+					    		$('#colorList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\" class = \"color " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
+				  			}
+				  		})
+					    
+					});
+					break;
+			case "Year of Introduction":
+			case "Consommation":
+					key_id = key.replace(/\s+/g, '');
+					$('#sortList').append("<li><a data-toggle=\"collapse\" data-parent=\"#sortList\" href=\"#sort" + key_id + "\">" + key + "</a><div id=\"sort" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"sortList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
+			    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
+					$.each(val, function( index, value )
+					{
+						$.each(value, function ( prop, propVal){
+							if(prop == "intro_year" || prop == "consommation")
+					    	{
+					    		if($.isNumeric(propVal))
+					    		{
+					    			propVal = propVal.toString();
+					    			//console.log(propVal);
+					    		}
+					    		else if(key =="Year of Introduction")
+					    		$('#sortList'+ key_id).append("<li><div class=\"radio\"> <label> <input type=\"radio\" name = \"sortopt\" class = \"sort " + key_id + " \"id =\"" + propVal +"\">" + propVal + "</label></div></li>");
+					    		$('#filterList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\" class = \"filter " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
+							}
+						});
+					});	
+					break;
+			case "Affiliation":
+					$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key + "\">" + key + "</a><div id=\"filter" + key + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key + "\" class=\"nav fixed-panel\"></ul>");
+					$.each(val, function( index, value )
+					{
+						/*$.each(value, function ( prop, propVal){
+							if(prop == "affiliation")*/
+							$('#filterList'+ key).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\" class =\"filter " + key + "\" name=\"" + value +"\" >" + value + "</label></div></li>");
+					
+						/*})*/
 
-		} else if(key == "Year of Introduction" || key == "Consommation" )
-		{	
-			$('#sortList').append("<li><a data-toggle=\"collapse\" data-parent=\"#sortPane\" href=\"#sort" + key + "\">" + key + "</a><div id=\"sort" + key + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"sortList" + key + "\" class=\"nav\"></ul>");
-	    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterPane\" href=\"#filter" + key + "\">" + key + "</a><div id=\"filter" + key + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key + "\" class=\"nav\"></ul>");
-			$.each(val.subcategories, function( index, value )
-			{
-			    $('#sortList'+ key).append("<li><div class=\"radio\"> <label> <input type=\"radio\" name=\"optradio\">" + value.subcategory + "</label></div></li><li>");
-			    $('#filterList'+ key).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\">" + value.subcategory + "</label></div></li><li>");
-			});	 			
+					});	
+					break;
+			default:
+					alert('Error');
+		}
 
-		} else if(key == "Affiliation")
-		{
-			$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterPane\" href=\"#filter" + key + "\">" + key + "</a><div id=\"filter" + key + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key + "\" class=\"nav\"></ul>");
-			$.each(val.subcategories, function( index, value )
-			{
-				$('#filterList'+ key).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\">" + value.subcategory + "</label></div></li><li>");
-			});	
-		}	
 
 	})
 }
 
+function parseData(len , data){
+	dataLength = len;
+	var start = len || 0;
+	console.log(data);
+	characterData = data.slice(0,dataLength);
+		//console.log(characterData)
+		if (chartSettings.innerChart == 'chords') {
+			getConnectionsData(start);
+		} else {
+			getBarData(start);
+		}
+		switch (chartSettings.sorting) {
+			case 'alphabetical':
+				characterData.sort(sortAlpha)
+				break;
+			case 'gender':
+				characterData.sort(sortGender);
+			break;
+		}
+}
 
+function addFilter(ref){
+
+		var listType = $(ref).parent("li").parents("ul").attr("id");
+		console.log(listType);
+		//selectedFilters[filterIndex] = listType;
+		selectedFilters = $(ref).children("label").text();
+		console.log(selectedFilters);
+}
+function removeFilter(ref){
+		var listType = $(ref).parent("li").parents("ul").attr("id");
+		console.log(listType);
+		//selectedFilters[filterIndex] = listType;
+		$.each(selectedFilter, function(key, val){
+			if (val == $(ref).children("label").text() )
+			{
+				delete selectedFilter.key;
+			}
+		});
+		console.log(selectedFilters);
+
+}
+
+function pinOption(name,type)
+{
+	console.log(name);
+	console.log(type);
+	console.log('#'+type+'pin');
+	$('#'+type+'Pin').append(name+"<br>");
+}
 /* Change inactive icon and set ascending/descending sort order*/
 $('#sortAsc').click(function() {
 	sortBy = 'asc';
-	$(this).addClass('inactive');
-	$('#sortDesc').removeClass('inactive');
+	$(this).addClass('active');
+	$('#sortDesc').removeClass('active');
 	return false;
 })
 
 $('#sortDesc').click(function() {
 	sortBy = 'desc';
-	$(this).addClass('inactive');
-	$('#sortAsc').removeClass('inactive');
+	$(this).addClass('active');
+	//$(this).removeClass('inactive');
+	//$('#sortAsc').addClass('inactive');
+	$('#sortAsc').removeClass('active');
 	return false;
 })
 
+$('#modechange').click(function() {
+	$('#pieBox').removeAttr("class");
+	if (chartSettings.innerChart == 'bars') { 
+		//switch to chords
+		chartSettings.innerChart = 'chords';
+		$(this).text("Connections Mode");
+	}
+	else { //switch to bars
+		$(this).text(" Bars Mode");
+		chartSettings.innerChart = 'bars';
+		$('#pieSliceBox > g.core').attr("class", "selected");
+		$('#pieSliceBox > g.selected-connection').removeAttr("class")
+		if ($('#chordsBox > path.core-selected').size() > 0)
+			$('#chordsBox > path.core-selected').attr("class", $('#chordsBox > path.core-selected').attr("class").replace('core-selected', 'selected'))
+	}
+	if (Object.keys(characterData[0]).indexOf("barchart") < 0 || connectionsData.length < 1) { //only generate random data for new data
+		getData();	
+	} else {
+		getData(dataLength);	
+	}
+})
