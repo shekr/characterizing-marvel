@@ -34,7 +34,8 @@ body {
 #vis-pie g.label-box  { display:none; }
 /*#vis-pie #pieSliceBox > g:nth-child(5n) g.label-box  { display:block; }*/
 #vis-pie .active g.label-box, #vis-pie .selected g.label-box, #vis-pie .selected-connection-core g.label-box { display:block; }
-#vis-pie text.instances { fill: #7B38CF; }
+#vis-pie text.instances { display:none; fill: #7B38CF; }
+#vis-pie .selected-connection-core text.instances { display:block;  }
 #vis-pie g.label-box circle.outline { fill: none; }
 #vis-pie .active g.label-box circle.outline, #vis-pie .selected g.label-box circle.outline { fill: #ebe435; }
 #vis-pie .selected.core g.label-box circle.outline { fill: #7B38CF; }

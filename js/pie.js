@@ -321,11 +321,12 @@ function updatePie(data) {
 	
 	svg.select("polyline#startLine").remove();
 
+	/* STARTING LINE */
 	d3.select("svg")
 		.append('polyline')
 		.attr("id", "startLine")
 		.attr('points', function() {
-			return (width/2) + "," + (height/2) + " " + (width/2)+ ",0";
+			return (width/2) + "," + 100 + " " + (width/2)+ ",50";
 		})
 		.attr("stroke", "#06637f")
 		.attr("stroke-width", "1px")
@@ -461,7 +462,7 @@ function updateChords(connections) {
 		
 		var connectedChords = svg.select('#chordsBox').selectAll('.chord-' + charID);
 		
-		if (selectedStateNow) {
+		if (selectedStateNow) { //now we're selected
 			connectedChords.each(function(nodeData) {
 					d3.select(this).classed('selected', true)
 					//add class to slices
@@ -512,14 +513,38 @@ function updateChords(connections) {
 			//turn all selection off
 			connectedChords.each(function(nodeData) {
 				var connectedCharID = nodeData.cid1 == charID ? nodeData.cid2 : nodeData.cid1
-				var connSelect = svg.select('#sliceGroup-' + connectedCharID)
-				//console.log(connectedCharID+ ' ' + connSelect.classed('selected'))
-				if (!connSelect.classed('selected')) {
-					//turn off chord and slice
-					connSelect.classed('selected-connection', false)
-					connSelect.classed('selected-core-connection', false)
+				var connSlice = svg.select('#sliceGroup-' + connectedCharID)
+				if (!connSlice.classed('selected')) { //if related slice isn't itself at least selected
+					//turn off connection between this and connected char
 					d3.select(this).classed('selected', false).classed('core-selected', false)
-				}			
+				}
+				//now go through all connected chars connections to see what their slice's new selected state should be
+				if (connSlice.classed('selected')) {
+					//if slice was selected, make sure it didn't have any other reasons to be selected-connection(-core)
+					var selectedSecondaryAll = svg.select('#chordsBox').selectAll('.selected.chord-' + connectedCharID)
+					secondaryConexCount = 0;
+					secondaryCoreCount = 0;
+					selectedSecondaryAll.each(function(subNodeData) {
+							var secondConnectedCharID = subNodeData.cid1 == connectedCharID ? subNodeData.cid2 : subNodeData.cid1;
+							var secondConnSlice = svg.select('#sliceGroup-' + secondConnectedCharID);
+							if (secondConnSlice.classed('selected'))
+								secondaryConexCount++;
+							if (secondConnSlice.classed('core'))
+								secondarycoreCount++;
+					})
+					if (secondaryConexCount == 0)
+						connSlice.classed('selected-connection', false)
+					if (secondaryCoreCount == 0)
+						connSlice.classed('selected-connection-core', false)
+				} else {
+					var secondarySelecteds = svg.select('#chordsBox').selectAll('.selected.chord-' + connectedCharID)
+					if (secondarySelecteds.size() == 0) //turn off selected-connection
+						connSlice.classed('selected-connection', false)
+					var secondarySelectedCores = svg.select('#chordsBox').selectAll('.core-selected.chord-' + connectedCharID)
+					if (secondarySelectedCores.size() == 0) //turn off selected-connection-core
+						connSlice.classed('selected-connection-core', false)
+				}
+
 			})
 		}
 	})
@@ -612,6 +637,18 @@ function updateBars(data) {
 		})
 	
 	bars.exit().remove();
+	
+	svg.select("polyline#startLine").remove();
+
+	/* STARTING LINE */
+	d3.select("svg")
+		.append('polyline')
+		.attr("id", "startLine")
+		.attr('points', function() {
+			return (width/2) + "," + (height/2 - 50) + " " + (width/2)+ ",50";
+		})
+		.attr("stroke", "#06637f")
+		.attr("stroke-width", "1px")
 	
 	/*REFERENCE TICKS*/	
 	var refNums = svg.select('#barsBox').selectAll("text.ref").data(bTicks)
