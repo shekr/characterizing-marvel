@@ -15,6 +15,7 @@ chartSettings.barchart = 'appearances';
 chartSettings.colorCode = 'neutral';
 chartSettings.sorting = 'alphabetical';
 var selectedFilters = [];
+var availableTags = [];
 var colorOptions =['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
 
 /* SORT AND COLOR-CODE FUNCS */
@@ -26,8 +27,35 @@ function sortAlpha(a,b) {
 	else
 		return 0;
 }
+function sortNation(a,b) {  
+	if (a.nationality > b.nationality)
+		return 1;
+	else if (a.nationality < b.nationality)
+		return -1;
+	else
+		return 0;
+}
+function sortAppear(a,b) {  
+
+	if (a.appearances > b.appearances)
+		return 1;
+	else if (a.appearances < b.appearances)
+		return -1;
+	else
+		return 0;
+}
+function sortYear(a,b) {  
+
+	if (a.intro_year > b.intro_year)
+		return 1;
+	else if (a.intro_year < b.intro_year)
+		return -1;
+	else
+		return 0;
+}
 
 function sortGender(a, b) {
+
 	if (a.gender > b.gender)
 		return -1;	
 	else if (a.gender == b.gender)
@@ -84,7 +112,7 @@ function innerChartDataDoneCallback() {
 function getConnectionsData() {
 	connectionsData = [];
 	var charIndices = characterData.map(function(x) {return x.character_id; });
-	console.log(charIndices)
+	//console.log(charIndices)
 	var returnCount = 0;
 	for (var i = 0; i < dataLength; i++) {
 		var currChar = characterData[i];
@@ -169,12 +197,13 @@ function getFilterData() {
 
 					filterData["Affiliation"] = data;
 
-					//$.get("https://marvelinfovis.herokuapp.com/api/filter/appearances/")
-					//.done(function(data) {
+					$.post("https://marvelinfovis.herokuapp.com/api/filter/appearances/", {startRange: "" , endRange: ""} )
+					.done(function(data) {
 
-					//	filterData["Number of Appearances"] = data;
+						filterData["Number of Appearances"] = data;
 						updateFilterOptions();
-					//});
+
+					});
 				});
 			});			
 		});

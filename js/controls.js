@@ -2,7 +2,6 @@
 * Modifies data in visualization based on selected filter, color coding and sorting  
 * Modifies available control options based on previously selected options
 */
-
 /* trigger the following on click
 	Send selected control options
 	request updated data (if filter)
@@ -58,6 +57,13 @@
 										number: 2
 									}
 								]
+	"Appearances": 	[	{
+							appearances: 4
+						},
+						{
+							appearances: 100
+						}
+					]
 	}
 
 
@@ -65,6 +71,50 @@
 */
 $( document ).ready(function() {
 
+$('.radClick').click(function(){
+	//console.log("click")
+	$(this).children('input').prop('checked', true);
+})
+
+	$(document).on('change' , ':radio' , function()
+	{
+		var option = $(this).next("label").text();
+		console.log(option);
+		switch(option){
+			case "Gender":
+					console.log("sorting");
+					chartSettings.sorting = 'gender';
+					characterData.sort(sortGender)
+					if($("#sortDesc").hasClass("active"))
+					{
+						characterData.reverse();
+					}
+					updateChart();
+					break;
+			case "Year of Introduction":
+					console.log("sorting");
+					chartSettings.sorting = 'intro_year';
+					characterData.sort(sortYear)
+					console.log(characterData);
+					updateChart();
+					break;			
+			case "Nationality":
+					console.log("sorting");			
+					chartSettings.sorting = 'nationality';
+					characterData.sort(sortNation)
+					updateChart();
+					break;			
+			case "Number of Appearances":
+					console.log("sorting");			
+					chartSettings.sorting = 'appearances';
+					characterData.sort(sortAppear)
+					updateChart();
+					break;
+			default:
+			break;
+		}
+	});
+		
 	$(document).on('change' , '.checkbox' , function()
 	{
 		var pinType;
@@ -111,7 +161,7 @@ $( document ).ready(function() {
 				.done(function(data) 
 				{
 					parseData(data.length,data);
-					//updateChart();
+					updateChart();
 
 				});
 			}
@@ -145,15 +195,17 @@ $( document ).ready(function() {
 					//updateChart();
 				});
 			}
-			/*if($(ref[index]).hasClass("Number of Appearances"))
+			if($(ref[index]).hasClass("Number of Appearances"))
 			{
+				
+
 				/* post to api
 				console.log(value.name)
 				$.post( "https://marvelinfovis.herokuapp.com/api/filter/appearances/", { "name": value.name})
 				.done(function(data) {
 					console.log(data);
-				});
-			}*/
+				});*/
+			}
 		});
 	});
 });
@@ -174,7 +226,8 @@ function updateFilterOptions()
 	
 	/*Redraw control options depending on filter, sort or color code 
 	by appending collapsibe li elements for each category and sub-category in the filterData object*/
-	
+
+
 	$('#filterList').empty();
 	$('#colorList').empty();
 	$('#sortList').empty();
@@ -186,10 +239,9 @@ function updateFilterOptions()
   		{
 			case "Gender":
 			case "Nationality":
-			case "Number of Appearances":
 					key_id = key.replace(/\s+/g, '');
-					$('#sortList').append("<li><a data-toggle=\"collapse\" data-parent=\"#sortList\" href=\"#sort" + key_id + "\">" + key + "</a><div id=\"sort" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"sortList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
-			    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
+					$('#sortList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"sortradio\"><label>"+key+"</label></li>");
+			    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\">");
 			    	$('#colorList').append("<li><a data-toggle=\"collapse\" data-parent=\"#colorList\" href=\"#color" + key_id + "\">" + key + "</a><div id=\"color" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"colorList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
 
 				  	$.each(val, function( index, value )
@@ -205,7 +257,7 @@ function updateFilterOptions()
 					    			propVal = propVal.toString();
 					    			console.log(propVal);
 					    		}
-				  				$('#sortList'+ key_id).append("<li><div class=\"radio\"> <label> <input type=\"radio\" name = \"sortopt\" class = \"sort " + key_id + " \"id =\""+ propVal +"\">" + propVal + "</label></div></li>");
+				  				//$('#sortList'+ key_id).append("<li><div class=\"radio\"> <label> <input type=\"radio\" name = \"sortopt\" class = \"sort " + key_id + " \"id =\""+ propVal +"\">" + propVal + "</label></div></li>");
 					    		$('#filterList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\"  class = \"filter " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
 					    		$('#colorList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\" class = \"color " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
 				  			}
@@ -216,7 +268,7 @@ function updateFilterOptions()
 			case "Year of Introduction":
 			case "Consommation":
 					key_id = key.replace(/\s+/g, '');
-					$('#sortList').append("<li><a data-toggle=\"collapse\" data-parent=\"#sortList\" href=\"#sort" + key_id + "\">" + key + "</a><div id=\"sort" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"sortList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
+					$('#sortList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"sortradio\"><label>"+key+"</label></li>");
 			    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
 					$.each(val, function( index, value )
 					{
@@ -229,7 +281,7 @@ function updateFilterOptions()
 					    			//console.log(propVal);
 					    		}
 					    		else if(key =="Year of Introduction")
-					    		$('#sortList'+ key_id).append("<li><div class=\"radio\"> <label> <input type=\"radio\" name = \"sortopt\" class = \"sort " + key_id + " \"id =\"" + propVal +"\">" + propVal + "</label></div></li>");
+					    		//$('#sortList'+ key_id).append("<li><div class=\"radio\"> <label> <input type=\"radio\" name = \"sortopt\" class = \"sort " + key_id + " \"id =\"" + propVal +"\">" + propVal + "</label></div></li>");
 					    		$('#filterList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\" class = \"filter " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
 							}
 						});
@@ -246,6 +298,33 @@ function updateFilterOptions()
 						/*})*/
 
 					});	
+					break;
+			case "Number of Appearances":
+					key_id = key.replace(/\s+/g, '');
+					$('#sortList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"sortradio\"><label>"+key+"</label></li>");
+			    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
+			    	$('#colorList').append("<li><a data-toggle=\"collapse\" data-parent=\"#colorList\" href=\"#color" + key_id + "\">" + key + "</a><div id=\"color" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"colorList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
+
+				  	$.each(val, function( index, value )
+				  	{
+
+				  		$.each(value, function ( prop, propVal){
+				  			//console.log(prop);
+				  		
+				  			if(prop == "gender" || prop == "nationality" || prop == "Number of Appearances")
+				  			{
+				  				if($.isNumeric(propVal))
+					    		{
+					    			propVal = propVal.toString();
+					    			console.log(propVal);
+					    		}
+				  				//$('#sortList'+ key_id).append("<li><div class=\"radio\"> <label> <input type=\"radio\" name = \"sortopt\" class = \"sort " + key_id + " \"id =\""+ propVal +"\">" + propVal + "</label></div></li>");
+					    		$('#filterList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\"  class = \"filter " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
+					    		//$('#colorList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\" class = \"color " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
+				  			}
+				  		})
+					    
+					});
 					break;
 			default:
 					alert('Error');
@@ -310,15 +389,17 @@ $('#sortAsc').click(function() {
 	sortBy = 'asc';
 	$(this).addClass('active');
 	$('#sortDesc').removeClass('active');
+	characterData.reverse();
+	updateChart();
 	return false;
 })
 
 $('#sortDesc').click(function() {
 	sortBy = 'desc';
 	$(this).addClass('active');
-	//$(this).removeClass('inactive');
-	//$('#sortAsc').addClass('inactive');
 	$('#sortAsc').removeClass('active');
+	characterData.reverse();
+	updateChart();
 	return false;
 })
 
@@ -343,3 +424,11 @@ $('#modechange').click(function() {
 		getData(dataLength);	
 	}
 })
+
+
+$(function() {
+
+    $( "#tags" ).autocomplete({
+      source: availableTags
+    });
+  });

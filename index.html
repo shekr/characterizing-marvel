@@ -4,6 +4,7 @@
 <!-- Latest compiled and minified CSS for Bootstrap-->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
 
 <body>
@@ -31,17 +32,20 @@
         <div class="row">
             <div id="vis-controls" class="component col-sm-3 col-md-2 sidebar">
                 <h4>Control Panel</h4>
-                <div class="panel"></div>
-                <button id="modechange" type="button" class="btn btn-primary">Connections Mode</button>
-                <div class="btn-group" role="group" aria-label="...">
-                    <button id="sortAsc" type="button" class="btn btn-default">
-                        <a href="#"><i class="fa fa-sort-amount-asc fa-fw active"></i></a>
-                    </button>
-                    <button id="sortDesc" type="button" class="btn btn-default">
-                        <a href="#"><i class="fa fa-sort-amount-desc fa-fw"></i></a>
-                    </button>
+                 <div class="panel fixed-list">
+                       <!--Search--> 
                 </div>
-                <div class="panel fixed-list"></div>
+                <div class="panel">
+                    <button id="modechange" type="button" class="btn btn-primary">Connections Mode</button>
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button id="sortAsc" type="button" class="btn btn-default active">
+                            <a href="#"><i class="fa fa-sort-amount-asc fa-fw"></i></a>
+                        </button>
+                        <button id="sortDesc" type="button" class="btn btn-default">
+                            <a href="#"><i class="fa fa-sort-amount-desc fa-fw"></i></a>
+                        </button>
+                    </div>
+                </div>
                 <div class="panel-group" id="accordion">
                   <div class="panel panel-default">
                     <div class="panel-heading">
@@ -53,12 +57,10 @@
                         <div id="sortPin">
                         </div>
                     </div>
-                    <div id="sortPane" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <ul id="sortList" class="nav nav-sidebar panel-group">
+                    <div id="sortPane" class="panel-collapse collapse panel-body">
+                        <ul id="sortList"   class="list-group panel-heading">
 
-                            </ul>                   
-                        </div>
+                        </ul>
                     </div>
               </div>
 
@@ -162,6 +164,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <!-- Latest compiled and minified Bootstrap JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <script src="js/fake-dataB.js"></script>
     <script src="js/fake-data-bars.js"></script>
 
