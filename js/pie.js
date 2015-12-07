@@ -19,6 +19,8 @@ var innerArcLineRadius = radius*.8;
 var imageHeight = 60;
 var imageWidth = 60;
 
+var lastSelectedDetailChar;
+
 var pie = d3.layout.pie()
 	.value(function(d) {
 		return 1;
@@ -69,6 +71,7 @@ svg.select('#pieBox').classed(chartSettings.innerChart, true);
 $('#clearer').click(function() {
 	svg.selectAll('#pieSliceBox > g, #chordsBox path, #barsBox > g').classed('selected', false).classed('core-selected', false).classed('selected-connection', false).classed('selected-connection-core', false);
 	svg.selectAll('#pieSliceBox > g.core').classed('core', false);
+	$('#vis-detail').removeClass("viewable");
 })
 
 $('#sorter').click(function() {
@@ -194,9 +197,9 @@ function updatePie(data) {
 		.attr("transform", function(d, i) {
 			var vertTransform = 0;
 			var horizTransform = 0;
-			if (i > dataLength/2)
+			if (i >= dataLength/2)
 				horizTransform = -imageWidth;
-			if (i < dataLength/4 || i > (dataLength/2 + dataLength/4)) 
+			if (i < dataLength/4 || i >= (dataLength/2 + dataLength/4)) 
 				vertTransform = -(imageHeight+10);
 			else
 				vertTransform = 10;
@@ -224,9 +227,9 @@ function updatePie(data) {
 	.attr("transform", function(d, i) {
 		var vertTransform = 0;
 		var horizTransform = 0;
-		if (i > dataLength/2)
+		if (i >= dataLength/2)
 			horizTransform = -imageWidth;
-		if (i < dataLength/4 || i > (dataLength/2 + dataLength/4)) 
+		if (i < dataLength/4 || i >= (dataLength/2 + dataLength/4)) 
 			vertTransform = -(imageHeight+10);
 		else
 			vertTransform = 10;
@@ -291,10 +294,9 @@ function updatePie(data) {
 		//slice and label
     	var nodeSelection = d3.select(this);
 		nodeSelection.classed('active', false);
-		var charID = nodeSelection.attr("id").replace('sliceGroup-', '');
-		selectC = svg.select('#pieBox g.selected');
-		if (selectC.size() > 0) {
-			populateDetailCard(selectC.datum().data);
+	console.log(lastSelectedDetailChar);
+		if (lastSelectedDetailChar != null) {
+			populateDetailCard(svg.select('#sliceGroup-' + lastSelectedDetailChar).datum().data);
 		} else {
 			d3.select('#vis-detail').classed('viewable', false);
 		}
@@ -302,13 +304,18 @@ function updatePie(data) {
 	
 	sliceParents.on('click', function(d) {
 		var charID = d.data.character_id;
-		var sliceParents = d3.selectAll('#pieSliceBox > g');
 		var nodeSelection = svg.select('#sliceGroup-'+charID);
 		var selectedState = nodeSelection.classed('selected');
-		
+		console.log(selectedState)
 		//turn all selected off
 		if (chartSettings.innerChart != 'bars')
 			sliceParents.classed('selected', false);
+		if (!selectedState)
+			lastSelectedDetailChar = charID;
+		else {
+			if (lastSelectedDetailChar == charID)
+				lastSelectedDetailChar = null;	
+		}
 		nodeSelection.classed('selected', !selectedState);
 	})	
 	
@@ -406,10 +413,13 @@ function updateChords(connections) {
 			//it was on core so turn selection off
 			nodeSelection.classed('core', false);
 			nodeSelection.classed('selected', false);
+			if (lastSelectedDetailChar == charID)
+				lastSelectedDetailChar = null;	
 		}
 		else { //core was not on
 			//turn on features for core and selected
 			nodeSelection.classed('selected', true);
+			lastSelectedDetailChar = charID;
 			if (selectedState)
 				nodeSelection.classed('core', true);
 		}
@@ -492,7 +502,7 @@ function updateChords(connections) {
 					
 					var cDetail = relationshipData[0]; //TODO: replace with API call
 					//add rollover detail
-					connSelect.select('g.label-box').on('mouseover', function(b) {
+					connSelect.on('mouseover.relationship', function(b) {
 						populateRelationshipCard(nodeSelection.datum().data, connSelect.datum().data, cDetail)
 						$('#vis-detail #relationship-detail').addClass("active");						
 					})						
@@ -513,15 +523,6 @@ function updateChords(connections) {
 			})
 		}
 	})
-		
-		//turn all selected off
-		/*svg.select('#chordsBox').selectAll('path').classed('selected', false).classed('core-selected', false)
-		if (coreStateNow && selectedStateNow) //turn core on
-			svg.select('#chordsBox').selectAll('.core.chord-' + charID).classed('core-selected', true);			
-		if (!coreStateNow && selectedStateNow) //turn selected on	
-			svg.select('#chordsBox').selectAll('.chord-' + charID).classed('selected', true);*/
-
-
 }
 
 /******** BARS ***********

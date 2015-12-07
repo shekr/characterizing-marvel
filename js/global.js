@@ -4,7 +4,7 @@
 */
 
 /* GLOBAL VARS */
-var dataLength = 100;
+var dataLength = 200;
 
 var characterData = [];
 var connectionsData = [];
@@ -15,7 +15,6 @@ chartSettings.innerChart = 'chords';
 chartSettings.barchart = 'appearances';
 chartSettings.colorCode = 'neutral';
 chartSettings.sorting = 'alphabetical';
-chartSettings.coreMode = false;
 
 /* SORT AND COLOR-CODE FUNCS */
 function sortAlpha(a,b) {  
