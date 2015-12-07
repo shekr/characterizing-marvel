@@ -66,6 +66,11 @@ var barKey = function(d) { return 'bar'+d.data.character_id }
 svg.select('#pieBox').classed(chartSettings.innerChart, true);
 
 /*** FILTER EXAMPLE IMPLEMENTATION ***/
+$('#clearer').click(function() {
+	svg.selectAll('#pieSliceBox > g, #chordsBox path, #barsBox > g').classed('selected', false).classed('core-selected', false).classed('selected-connection', false).classed('selected-connection-core', false);
+	svg.selectAll('#pieSliceBox > g.core').classed('core', false);
+})
+
 $('#sorter').click(function() {
 	chartSettings.sorting = 'gender';
 	characterData.sort(sortGender)
@@ -100,10 +105,13 @@ $('#mode-changer').click(function() {
 	}
 	else { //switch to bars
 		chartSettings.innerChart = 'bars';
+		//get rid of chord event listeners on slices
+		svg.selectAll('#pieSliceBox > g').on('mouseover.chord', null).on('mouseout.chord', null);
+		//change all slices that are core to selected, ones that are selected-connection or selected-connection-core off
 		$('#pieSliceBox > g.core').attr("class", "selected");
 		$('#pieSliceBox > g.selected-connection').removeAttr("class")
-		if ($('#chordsBox > path.core-selected').size() > 0)
-			$('#chordsBox > path.core-selected').attr("class", $('#chordsBox > path.core-selected').attr("class").replace('core-selected', 'selected'))
+		/*if ($('#chordsBox > path.core-selected').size() > 0)
+			$('#chordsBox > path.core-selected').attr("class", $('#chordsBox > path.core-selected').attr("class").replace('core-selected', 'selected'))*/
 	}
 	if (Object.keys(characterData[0]).indexOf("barchart") < 0 || connectionsData.length < 1) { //only generate random data for new data
 		getData();	
@@ -176,6 +184,25 @@ function updatePie(data) {
 	.attr("transform", function(d) {
 		return "translate(" + textArc.centroid(d) + ")";
 	})
+	
+	/* OUTLINE BUBBLE */
+	labelBoxes
+		.append("circle")
+		.attr("r", (imageHeight+5)/2)
+		.attr("cx", imageWidth/2)
+		.attr("cy", imageHeight/2)
+		.attr("transform", function(d, i) {
+			var vertTransform = 0;
+			var horizTransform = 0;
+			if (i > dataLength/2)
+				horizTransform = -imageWidth;
+			if (i < dataLength/4 || i > (dataLength/2 + dataLength/4)) 
+				vertTransform = -(imageHeight+10);
+			else
+				vertTransform = 10;
+			return "translate(" + horizTransform + "," + vertTransform +")";
+		})
+		.classed("outline", true)
 	
 	/* CLIPPING PATH */
 	labelBoxes.append("clipPath")
@@ -293,7 +320,7 @@ function updatePie(data) {
 		.attr('points', function() {
 			return (width/2) + "," + (height/2) + " " + (width/2)+ ",0";
 		})
-		.attr("stroke", "#000")
+		.attr("stroke", "#06637f")
 		.attr("stroke-width", "1px")
 };
 
@@ -534,8 +561,14 @@ function updateBars(data) {
 		.attr("id", function(d) {
 			return "bar-" + d.data.character_id;
 		})
+		.classed("selected", function(d) {
+			if (svg.select('#sliceGroup-' + d.data.character_id).classed('selected'))
+				return true;
+			else
+				return false;
+		})
 		.append("path")
-		.attr("class", "barSlice")		
+		.attr("class", "barSlice")
 
 	bars.select("path.barSlice")
 		.transition()

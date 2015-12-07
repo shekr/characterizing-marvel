@@ -22,6 +22,7 @@ body {
 	width: 100%;
 	height: 100%;
 }
+#vis-pie text { font-size: 11px; dominant-baseline: middle; }
 
 /* SLICES */
 #vis-pie path.slice { stroke: #ccc; stroke-width: 1px; }
@@ -33,8 +34,10 @@ body {
 #vis-pie g.label-box  { display:none; }
 /*#vis-pie #pieSliceBox > g:nth-child(5n) g.label-box  { display:block; }*/
 #vis-pie .active g.label-box, #vis-pie .selected g.label-box, #vis-pie .selected-connection-core g.label-box { display:block; }
-#vis-pie text { font-size: 11px; dominant-baseline: middle; }
 #vis-pie text.instances { fill: #7B38CF; }
+#vis-pie g.label-box circle.outline { fill: none; }
+#vis-pie .active g.label-box circle.outline, #vis-pie .selected g.label-box circle.outline { fill: #ebe435; }
+#vis-pie .selected.core g.label-box circle.outline { fill: #7B38CF; }
 #vis-pie text.name-only { display: none; }
 /*#vis-pie .active-connected text.name-only, #vis-pie .selected-connection text.name-only { display: block; }
 #vis-pie text.name-only, #vis-pie .active.active-connected text.name-only, #vis-pie .selected.active-connected text.name-only, #vis-pie .selected.selected-connection text.name-only, #vis-pie .active.selected-connection text.name-only, #vis-pie .selected-connected-core text.name-only { display: none; }*/

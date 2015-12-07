@@ -64,15 +64,12 @@ function getData(start) {
 			getBarData(start);
 		}
 		filterData = getFilterData();
-		/***ANY UPDATES TO THE UI DEPENDENT ON DATA MUST BE CALLED HERE**/
-		
-		//updateChart();
 		
 	})	
 }
 
 function innerChartDataDoneCallback() {
-	console.log("CHORDS DATA DONE!*************************************")
+	/***ANY UPDATES TO THE UI DEPENDENT ON DATA MUST BE CALLED HERE**/
 	switch (chartSettings.sorting) {
 		case 'alphabetical':
 			characterData.sort(sortAlpha)
@@ -137,15 +134,16 @@ function getConnectionsFakeData(startIndex) {
 function getBarData(startIndex) {
 	//create some random barchart data and append to charData
 	for (var i = startIndex; i < dataLength; i++) {
-	var currChar = characterData[i];
-	currChar.barchart = {};
-	currChar.barchart.appearances = Math.floor(Math.random()*10000);
-	currChar.barchart.aliases = Math.floor(Math.random()*10)
-	currChar.barchart.connections = Math.floor(Math.random()*500);
-	currChar.barchart.affilations = Math.floor(Math.random() * 20);
-	currChar.barchart.powers = Math.floor(Math.random()*10);
-	characterData[i] = currChar;
-}
+		var currChar = characterData[i];
+		currChar.barchart = {};
+		currChar.barchart.appearances = Math.floor(Math.random()*10000);
+		currChar.barchart.aliases = Math.floor(Math.random()*10)
+		currChar.barchart.connections = Math.floor(Math.random()*500);
+		currChar.barchart.affilations = Math.floor(Math.random() * 20);
+		currChar.barchart.powers = Math.floor(Math.random()*10);
+		characterData[i] = currChar;
+	}
+	innerChartDataDoneCallback()
 	
 }
 
