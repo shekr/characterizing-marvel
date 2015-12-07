@@ -8,14 +8,15 @@ var dataLength = 100;
 
 var characterData = [];
 var connectionsData = [];
-var filterData = [];
-
+var filterData = {};
 var chartSettings = {}
 chartSettings.innerChart = 'chords';
 chartSettings.barchart = 'appearances';
 chartSettings.colorCode = 'neutral';
 chartSettings.sorting = 'alphabetical';
 chartSettings.coreMode = false;
+var selectedFilters = [];
+var colorOptions =['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
 
 /* SORT AND COLOR-CODE FUNCS */
 function sortAlpha(a,b) {  
@@ -149,8 +150,40 @@ function getBarData(startIndex) {
 
 function getFilterData() {
 	/* RUTA/ROBIN THIS IS FOR YOU */	
-	console.log("Getting updated list of available control options")
-	return controlOptions;
+	//console.log("Getting updated list of available control options. List of Nationalities	");
+	$.get( "https://marvelinfovis.herokuapp.com/api/filter/gender/")
+	.done(function(data) {
+		
+		filterData["Gender"] = data;
+
+		$.get( "https://marvelinfovis.herokuapp.com/api/filter/year_introduced/")
+		.done(function(data) {
+			
+			filterData["Year of Introduction"] = data;
+
+			$.get( "https://marvelinfovis.herokuapp.com/api/filter/nationality/")
+			.done(function(data) {
+		
+				filterData["Nationality"] = data;
+
+				$.get( "https://marvelinfovis.herokuapp.com/api/filter/affiliation/")
+				.done(function(data) {
+
+					filterData["Affiliation"] = data;
+
+					//$.get("https://marvelinfovis.herokuapp.com/api/filter/appearances/")
+					//.done(function(data) {
+
+					//	filterData["Number of Appearances"] = data;
+						updateFilterOptions();
+					//});
+				});
+			});			
+		});
+	});
+	
+	//console.log(filterData);
+	return filterData;
 }
 
 

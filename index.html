@@ -30,21 +30,32 @@
     <div class="container-fluid">
         <div class="row">
             <div id="vis-controls" class="component col-sm-3 col-md-2 sidebar">
-                <h4>Controls</h4>
+                <h4>Control Panel</h4>
+                <div class="panel"></div>
+                <button id="modechange" type="button" class="btn btn-primary">Connections Mode</button>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button id="sortAsc" type="button" class="btn btn-default">
+                        <a href="#"><i class="fa fa-sort-amount-asc fa-fw active"></i></a>
+                    </button>
+                    <button id="sortDesc" type="button" class="btn btn-default">
+                        <a href="#"><i class="fa fa-sort-amount-desc fa-fw"></i></a>
+                    </button>
+                </div>
+                <div class="panel fixed-list"></div>
                 <div class="panel-group" id="accordion">
                   <div class="panel panel-default">
                     <div class="panel-heading">
                       <h4 class="panel-title">
                         <a data-toggle="collapse" data-parent="#accordion" href="#sortPane">
                         Sort 
-                        <a href="#"><i  id="sortAsc" class="fa fa-sort-amount-asc fa-fw"></i></a>
-                        <a href="#"><i id="sortDesc" class="fa fa-sort-amount-desc fa-fw inactive"></i></a>
+                        </a>
                       </h4>
-                      <p>Sorted by Gender</p>
+                        <div id="sortPin">
+                        </div>
                     </div>
                     <div id="sortPane" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <ul id="sortList" class="nav nav-sidebar">
+                            <ul id="sortList" class="nav nav-sidebar panel-group">
 
                             </ul>                   
                         </div>
@@ -57,6 +68,8 @@
                         <a data-toggle="collapse" data-parent="#accordion" href="#filterPane">
                         Filter</a>
                       </h4>
+                        <div id="filterPin">
+                        </div>
                     </div>
                     <div id="filterPane" class="panel-collapse collapse">
                       <div class="panel-body">
@@ -74,7 +87,10 @@
                       <h4 class="panel-title">
                         <a data-toggle="collapse" data-parent="#accordion" href="#colorPane">
                         Color Code</a>
+                        <span class="label label-default" style="background:#a6cee3;">&nbsp;&nbsp;&nbsp;</span>
                       </h4>
+                            <div id="colorPin">
+                            </div>
                     </div>
                     <div id="colorPane" class="panel-collapse collapse">
                         <div class="panel-body">
