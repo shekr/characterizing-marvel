@@ -17,7 +17,8 @@ chartSettings.sorting = 'alphabetical';
 var selectedFilters = [];
 var availableTags = [];
 var colorOptions =['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'];
-
+var appearRange =[];
+var yearRange =[];
 /* SORT AND COLOR-CODE FUNCS */
 function sortAlpha(a,b) {  
 	if (a.name > b.name)
@@ -45,6 +46,14 @@ function sortAppear(a,b) {
 		return 0;
 }
 function sortYear(a,b) {  
+	if(!$.isNumeric(a.intro_year))
+	{
+		a.intro_year="";
+	}
+	if(!$.isNumeric(b.intro_year))
+	{
+		b.intro_year="";
+	}
 
 	if (a.intro_year > b.intro_year)
 		return 1;
@@ -52,6 +61,7 @@ function sortYear(a,b) {
 		return -1;
 	else
 		return 0;
+
 }
 
 function sortGender(a, b) {
@@ -65,12 +75,77 @@ function sortGender(a, b) {
 }
 
 function colCodeGender(d) {
-	if(d.data.gender == 'Male')
-		return '#d72829';
-	else if (d.data.gender == 'Female')
-		return '#4f649d';
+	var arr = findPropName(filterData, "Gender","gender");
+	var color;
+	$.each(arr, function(index, val){
+
+					    		
+		if(d.data.gender == val) 
+		{
+			color = colorOptions[index];
+			pinOption(color,d.data.gender);
+			/* change later to add color swatches */
+		}
+	})
+	return color;
+
 }
 
+function colCodeNation(d) {
+	var arr = findPropName(filterData, "Nationality","nationality");
+	var color;
+	$.each(arr, function(index, val){
+		if(d.data.gender == val) 
+		{
+			color = colorOptions[index];
+			pinOption(color,d.data.nationality);
+			/* change later to add color swatches */
+		}
+	})
+	return color;
+
+}
+
+function colCodeAppear(d) {
+	//var arr = findPropName(filterData, "Appearances","a");
+	var color;
+	$.each(appearRange, function(index, val){
+		if($.isNumeric(d.data.appearances))
+		{
+			if(d.data.appearances >= val && d.data.appearances < appearRange[index+1]) 
+			{
+				color = colorOptions[index];
+				pinOption(color,appearRange[index]);
+				/* change later to add color swatches */
+			}
+		}
+		else{
+			color = 'gray';
+		}
+	})
+	return color;
+
+}
+function colCodeYear(d) {
+	//var arr = findPropName(filterData, "Year of Introduction","intro_year");
+	var color;
+	$.each(yearRange, function(index, val){
+		if($.isNumeric(d.data.intro_year))
+		{
+			if(d.data.intro_year >= val && d.data.intro_year < yearRange[index+1]) 
+			{
+				color = colorOptions[index];
+				pinOption(color,yearRange[index]);
+				/* change later to add color swatches */
+			}
+		}
+		else{
+			color = 'gray';
+		}
+	})
+	return color;
+
+}
 /* OTHER UTILITY FUNCS*/
 function generateImageLink(origLink, newType) {
 	var extension = origLink.match(/\.[a-zA-Z]{3,4}$/)[0];
@@ -184,8 +259,16 @@ function getFilterData() {
 
 		$.get( "https://marvelinfovis.herokuapp.com/api/filter/year_introduced/")
 		.done(function(data) {
-			
+			/*$.each(data,function(index,value){
+				if(!$.isNumeric(value.intro_year)||value.intro_year == null)
+				{
+					console.log(value.intro_year);
+					value.intro_year="";
+				}
+			})*/
 			filterData["Year of Introduction"] = data;
+
+			yearRange = calcRange(filterData,"Year of Introduction","intro_year");
 
 			$.get( "https://marvelinfovis.herokuapp.com/api/filter/nationality/")
 			.done(function(data) {
@@ -198,9 +281,15 @@ function getFilterData() {
 					filterData["Affiliation"] = data;
 
 					$.post("https://marvelinfovis.herokuapp.com/api/filter/appearances/", {startRange: "" , endRange: ""} )
-					.done(function(data) {
-
+					 .done(function(data) {
+						/*$.each(data,function(index,value){
+							if(!$.isNumeric(data.appearances)||data.appearances == null)
+							{
+								data.appearances="";
+							}
+						})*/					
 						filterData["Number of Appearances"] = data;
+						appearRange = calcRange(filterData,"Number of Appearances","appearances");
 						updateFilterOptions();
 
 					});
@@ -209,7 +298,9 @@ function getFilterData() {
 		});
 	});
 	
-	//console.log(filterData);
+
+
+	
 	return filterData;
 }
 

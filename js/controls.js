@@ -70,19 +70,21 @@
 
 */
 $( document ).ready(function() {
-
+	
+/* Sorting radio button workaround */ 
 $('.radClick').click(function(){
 	//console.log("click")
 	$(this).children('input').prop('checked', true);
 })
 
-	$(document).on('change' , ':radio' , function()
+/* Sorting implementation */
+	$(document).on('change' , '#sortList :radio' , function()
 	{
 		var option = $(this).next("label").text();
-		console.log(option);
+		//console.log(option);
+		pinOption(option,"sort");
 		switch(option){
 			case "Gender":
-					console.log("sorting");
 					chartSettings.sorting = 'gender';
 					characterData.sort(sortGender)
 					if($("#sortDesc").hasClass("active"))
@@ -92,20 +94,17 @@ $('.radClick').click(function(){
 					updateChart();
 					break;
 			case "Year of Introduction":
-					console.log("sorting");
 					chartSettings.sorting = 'intro_year';
 					characterData.sort(sortYear)
 					console.log(characterData);
 					updateChart();
 					break;			
-			case "Nationality":
-					console.log("sorting");			
+			case "Nationality":		
 					chartSettings.sorting = 'nationality';
 					characterData.sort(sortNation)
 					updateChart();
 					break;			
-			case "Number of Appearances":
-					console.log("sorting");			
+			case "Number of Appearances":		
 					chartSettings.sorting = 'appearances';
 					characterData.sort(sortAppear)
 					updateChart();
@@ -114,7 +113,45 @@ $('.radClick').click(function(){
 			break;
 		}
 	});
-		
+
+	$(document).on('change' , '#colorList :radio' , function()
+	{
+		var option = $(this).next("label").text();
+		//console.log(option);
+		pinOption(option,"color");
+		switch(option){
+			case "Gender":
+					chartSettings.colorCode = 'gender';
+					svg.selectAll('#pieSliceBox path.slice')
+						.transition()
+						.duration(300)
+						.style("fill", colCodeGender)
+					break;	
+			case "Nationality":		
+					chartSettings.colorCode = 'nationality';
+					svg.selectAll('#pieSliceBox path.slice')
+						.transition()
+						.duration(300)
+						.style("fill", colCodeNation)
+					break;			
+			case "Number of Appearances":		
+					chartSettings.colorCode = 'appearances';
+					svg.selectAll('#pieSliceBox path.slice')
+						.transition()
+						.duration(300)
+						.style("fill", colCodeAppear)
+					break;
+			case "Year of Introduction":		
+					chartSettings.colorCode = 'year';
+					svg.selectAll('#pieSliceBox path.slice')
+						.transition()
+						.duration(300)
+						.style("fill", colCodeYear)
+					break;					
+			default:
+			break;
+		}
+	});	
 	$(document).on('change' , '.checkbox' , function()
 	{
 		var pinType;
@@ -128,86 +165,96 @@ $('.radClick').click(function(){
 			if($(ref[index]).hasClass("color"))
 			{
 				pinType = "color";
-			}
-			else if
-				($(ref[index]).hasClass("filter"))
-			{
-				pinType = "filter";
-			}
-			else if($(ref[index]).hasClass("sort"))
-			{
-				pinType = "sort";
-			}
-			if($(ref[index]).hasClass("Affiliation"))
-			{
-				/* post to api*/
-				console.log(value.name);
-				console.log(pinType);
-				pinOption(value.name,pinType);
-				$.post( "https://marvelinfovis.herokuapp.com/api/filter/affiliation/", { "name": value.name})
-				.done(function(data) {
-					parseData(data.length,data);
-					//updateChart();
-
-
-				});
-			}
-			if($(ref[index]).hasClass("Nationality"))
-			{
-					/* post to api*/
-				console.log(value.name);
-				pinOption(value.name,pinType);
-				$.post( "https://marvelinfovis.herokuapp.com/api/filter/nationality/", { "name": value.name})
-				.done(function(data) 
+				if($(ref[index]).hasClass("Gender"))
 				{
-					parseData(data.length,data);
-					updateChart();
-
-				});
-			}
-			if($(ref[index]).hasClass("Year of Introduction"))
-			{
-				/* post to api*/
-				console.log(value.name);
-				pinOption(value.name,pinType);
-				$.post( "https://marvelinfovis.herokuapp.com/api/filter/year_introduced/", { year: value.name})
-				.done(function(data) {
-					parseData(data.length,data);
-					//updateChart();
-
-
-				});
-			}
-			if($(ref[index]).hasClass("Gender"))
-			{
-				/* post to api*/
-				console.log(value.name);
-				pinOption(value.name,pinType);
-				$.post( "https://marvelinfovis.herokuapp.com/api/filter/gender/", { gender: value.name})
-				.done(function(data) {
-					console.log(data.length);
-					parseData(data.length,data);
+					
+					//pinOption("Gender",pinType);
 					chartSettings.colorCode = 'gender';
 					svg.selectAll('#pieSliceBox path.slice')
 					.transition()
 					.duration(300)
 					.style("fill", colCodeGender)
-					//updateChart();
-				});
-			}
-			if($(ref[index]).hasClass("Number of Appearances"))
-			{
-				
 
-				/* post to api
-				console.log(value.name)
-				$.post( "https://marvelinfovis.herokuapp.com/api/filter/appearances/", { "name": value.name})
-				.done(function(data) {
-					console.log(data);
-				});*/
+
+				}
+				if($(ref[index]).hasClass("Number of Appearances"))
+				{
+					
+					pinOption("Number of Appearances",pinType);
+					
+				}
 			}
+			else if($(ref[index]).hasClass("filter"))
+			{
+					pinType = "filter";
+					if($(ref[index]).hasClass("Affiliation"))
+				{
+					/* post to api*/
+					console.log(value.name);
+					console.log(pinType);
+					pinOption(value.name,pinType);
+					$.post( "https://marvelinfovis.herokuapp.com/api/filter/affiliation/", { "name": value.name})
+					.done(function(data) {
+						parseData(data.length,data);
+						updateChart();
+
+
+					});
+				}
+				if($(ref[index]).hasClass("Nationality"))
+				{
+						/* post to api*/
+					console.log(value.name);
+					pinOption(value.name,pinType);
+					$.post( "https://marvelinfovis.herokuapp.com/api/filter/nationality/", { "name": value.name})
+					.done(function(data) 
+					{
+						parseData(data.length,data);
+						updateChart();
+
+					});
+				}
+				if($(ref[index]).hasClass("Year of Introduction"))
+				{
+					/* post to api*/
+					console.log(value.name);
+					pinOption(value.name,pinType);
+					$.post( "https://marvelinfovis.herokuapp.com/api/filter/year_introduced/", { year: value.name})
+					.done(function(data) {
+						parseData(data.length,data);
+						updateChart();
+
+
+					});
+				}
+				if($(ref[index]).hasClass("Gender"))
+				{
+					/* post to api*/
+					console.log(value.name);
+					pinOption(value.name,pinType);
+					$.post( "https://marvelinfovis.herokuapp.com/api/filter/gender/", { gender: value.name})
+					.done(function(data) {
+						console.log(data.length);
+						parseData(data.length,data);
+						updateChart();
+					});
+				}
+				if($(ref[index]).hasClass("Number of Appearances"))
+				{
+					
+
+					/* post to api
+					console.log(value.name)
+					$.post( "https://marvelinfovis.herokuapp.com/api/filter/appearances/", { "name": value.name})
+					.done(function(data) {
+						console.log(data);
+					});*/
+				}
+			}
+			
 		});
 	});
+	
 });
 
 
@@ -242,7 +289,7 @@ function updateFilterOptions()
 					key_id = key.replace(/\s+/g, '');
 					$('#sortList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"sortradio\"><label>"+key+"</label></li>");
 			    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\">");
-			    	$('#colorList').append("<li><a data-toggle=\"collapse\" data-parent=\"#colorList\" href=\"#color" + key_id + "\">" + key + "</a><div id=\"color" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"colorList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
+			    	$('#colorList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"colorradio\"><label>"+key+"</label></li>");
 
 				  	$.each(val, function( index, value )
 				  	{
@@ -259,7 +306,7 @@ function updateFilterOptions()
 					    		}
 				  				//$('#sortList'+ key_id).append("<li><div class=\"radio\"> <label> <input type=\"radio\" name = \"sortopt\" class = \"sort " + key_id + " \"id =\""+ propVal +"\">" + propVal + "</label></div></li>");
 					    		$('#filterList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\"  class = \"filter " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
-					    		$('#colorList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\" class = \"color " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
+					    		//$('#colorList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\" class = \"color " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
 				  			}
 				  		})
 					    
@@ -270,6 +317,7 @@ function updateFilterOptions()
 					key_id = key.replace(/\s+/g, '');
 					$('#sortList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"sortradio\"><label>"+key+"</label></li>");
 			    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
+					$('#colorList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"colorradio\"><label>"+key+"</label></li>");
 					$.each(val, function( index, value )
 					{
 						$.each(value, function ( prop, propVal){
@@ -303,7 +351,7 @@ function updateFilterOptions()
 					key_id = key.replace(/\s+/g, '');
 					$('#sortList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"sortradio\"><label>"+key+"</label></li>");
 			    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
-			    	$('#colorList').append("<li><a data-toggle=\"collapse\" data-parent=\"#colorList\" href=\"#color" + key_id + "\">" + key + "</a><div id=\"color" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"colorList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
+			    	$('#colorList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"colorradio\"><label>"+key+"</label></li>");
 
 				  	$.each(val, function( index, value )
 				  	{
@@ -329,7 +377,6 @@ function updateFilterOptions()
 			default:
 					alert('Error');
 		}
-
 
 	})
 }
@@ -379,10 +426,18 @@ function removeFilter(ref){
 
 function pinOption(name,type)
 {
-	console.log(name);
-	console.log(type);
-	console.log('#'+type+'pin');
-	$('#'+type+'Pin').append(name+"<br>");
+	if( type == "sort")
+	{
+		$('#'+type+'Pin').text("");
+		$('#'+type+'Pin').append(name+"<br>");
+	}else if (type == "color"){
+		$('#'+type+'Pin').text("");
+		$('#'+type+'Pin').append(name+"<br>");
+
+	}else{
+		$('#'+type+'Pin').append(name+"<br>");
+	}
+
 }
 /* Change inactive icon and set ascending/descending sort order*/
 $('#sortAsc').click(function() {
@@ -425,7 +480,36 @@ $('#modechange').click(function() {
 	}
 })
 
+function findPropName(data, prop, name){
+	var propArr=[];
+	$.each(data[prop], function(index,val){
+		//console.log(name);
+		propArr[index]= val[name];
+		//console.log(propArr[index]);
+	})
+	return propArr;
+}
+function findRange(data,prop){
+	//r1 = d3.max(data);
+	//r2 = d3.min(data);
+	//console.log(prop);
+	var range = d3.extent(data)
+	var scale= d3.scale.linear()
+		.domain(range)
+	//	.range([r2, r1])
+	//console.log(r1);
+	//console.log(r2);
+	//console.log(scale.ticks(10));
+	return scale.ticks(12);
+}
 
+function calcRange(data, prop, name){
+	var arr = findPropName(data,prop,name);
+	var ticks = findRange(arr,name);
+	//console.log(arr);
+	//console.log(ticks);
+	return ticks;
+}
 $(function() {
 
     $( "#tags" ).autocomplete({
