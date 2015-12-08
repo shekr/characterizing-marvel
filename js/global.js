@@ -4,7 +4,7 @@
 */
 
 /* GLOBAL VARS */
-var dataLength = 20;
+var dataLength = 200;
 
 var characterData = [];
 var connectionsData = [];
@@ -175,9 +175,8 @@ function getData(start) {
 		if (chartSettings.innerChart == 'chords') {
 			getConnectionsData();
 		} else {
-			getBarData(start);
+			innerChartDataDoneCallback()	
 		}
-		
 		filterData = getFilterData();
 		
 	})	
@@ -250,6 +249,7 @@ function getConnectionsFakeData(startIndex) {
 	}
 }**/
 
+/*
 function getBarData(startIndex) {
 	//create some random barchart data and append to charData
 	for (var i = startIndex; i < dataLength; i++) {
@@ -264,7 +264,7 @@ function getBarData(startIndex) {
 	}
 	innerChartDataDoneCallback()
 	
-}
+}*/
 
 function getFilterData() {
 	//console.log("Getting updated list of available control options. List of Nationalities	");

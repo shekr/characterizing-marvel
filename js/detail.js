@@ -1,8 +1,8 @@
 function populateDetailCard(fChar) {
-	console.log(fChar.character_id)
+	//console.log(fChar.character_id)
 	$.post( "https://marvelinfovis.herokuapp.com/api/character/", { character_id: fChar.character_id })
 		.done(function(data) {
-			console.log(data)
+			//console.log(data)
 			var details = data;
 			$('#vis-detail #detail-title').text(fChar.name);
 			$('#vis-detail #title-box h4').remove();

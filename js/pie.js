@@ -121,11 +121,8 @@ $('#mode-changer').click(function() {
 		/*if ($('#chordsBox > path.core-selected').size() > 0)
 			$('#chordsBox > path.core-selected').attr("class", $('#chordsBox > path.core-selected').attr("class").replace('core-selected', 'selected'))*/
 	}
-	if (Object.keys(characterData[0]).indexOf("barchart") < 0 || connectionsData.length < 1) { //only generate random data for new data
-		getData();	
-	} else {
-		getData(dataLength);	
-	}
+	getData();	
+
 })
 /*** END FILTER EXAMPLE IMPLEMENTATION ***/
 
@@ -526,7 +523,6 @@ function chordClick(d) {
 								.classed("instances", true)		
 						}
 						else {
-							if (!connSelect.classed('selected'))
 								d3.select(this).classed('selected', false);
 						}
 					}
@@ -566,7 +562,8 @@ function chordClick(d) {
 						connSlice.classed('selected-connection', false)
 					if (secondaryCoreCount == 0)
 						connSlice.classed('selected-connection-core', false)
-				} else {
+				}
+				else {
 					var secondarySelecteds = svg.select('#chordsBox').selectAll('.selected.chord-' + connectedCharID)
 					if (secondarySelecteds.size() == 0) //turn off selected-connection
 						connSlice.classed('selected-connection', false)
@@ -582,12 +579,11 @@ function chordClick(d) {
 /******** BARS ***********
 ************************/
 
-var barRefs = [.875, .75, .625, .5];
 function updateBars(data) {
-	var barRange = d3.extent(data, function(d) { return d.barchart[chartSettings.barchart] } )
+	var barRange = d3.extent(data, function(d) { return d.appearances /*d.barchart[chartSettings.barchart]*/ } )
 	var barScale= d3.scale.linear()
 		.domain(barRange)
-		.range([1, 0.5])
+		.range([1, 0.3])
 	
 	/* REFERENCE LINES */
 	var bTicks = barScale.ticks(5);
@@ -633,7 +629,7 @@ function updateBars(data) {
 			var interpolate = d3.interpolate(this._current, d);
 			this._current = interpolate(0);
 			var dynamicArc = d3.svg.arc()
-			.innerRadius(innerPieRadius*barScale(d.data.barchart[chartSettings.barchart]))
+			.innerRadius(innerPieRadius*barScale(d.data.appearances/*d.data.barchart[chartSettings.barchart]*/))
 			.outerRadius(innerPieRadius);
 			return function(t) {
 				return dynamicArc(interpolate(t));
@@ -661,7 +657,7 @@ function updateBars(data) {
 			 return "end"; 
 		})
 		.text(function(d) {
-			return d.data.barchart[chartSettings.barchart];
+			return d.data.appearances /*d.data.barchart[chartSettings.barchart]*/;
 		})
 		/*.attr("transform", function(d, i) {
 			var transformAngle = (180/3.14) * d.startAngle-90;
@@ -683,7 +679,7 @@ function updateBars(data) {
 				if (i >= dataLength/2) 
 					transformAngle = transformAngle-180;
 				
-				var dynamicArcBound = innerPieRadius*barScale(d.data.barchart[chartSettings.barchart]) - 20;			
+				var dynamicArcBound = innerPieRadius*barScale(d.data.appearances /*d.data.barchart[chartSettings.barchart]*/) - 20;			
 				var dynamicArc = d3.svg.arc()
 					.innerRadius(dynamicArcBound)
 					.outerRadius(dynamicArcBound);
@@ -694,9 +690,9 @@ function updateBars(data) {
 	
 	bars.exit().remove();
 	
-	svg.select("polyline#startLine").remove();
+	/*svg.select("polyline#startLine").remove();
 
-	/* STARTING LINE */
+	 STARTING LINE 
 	d3.select("svg")
 		.append('polyline')
 		.attr("id", "startLine")
@@ -704,7 +700,7 @@ function updateBars(data) {
 			return (width/2) + "," + (height/2 - 50) + " " + (width/2)+ ",50";
 		})
 		.attr("stroke", "#06637f")
-		.attr("stroke-width", "1px")
+		.attr("stroke-width", "1px")*/
 	
 	/*REFERENCE TICKS*/	
 	var refNums = svg.select('#barsBox').selectAll("text.ref").data(bTicks)

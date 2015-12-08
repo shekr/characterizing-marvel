@@ -27,9 +27,11 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Bangers', "Helvetica Neue", Helvetica, Ar
 
 /* SLICES */
 #vis-pie path.slice { stroke: #ccc; stroke-width: 1px; }
-#vis-pie .active path.slice, #vis-pie .selected path.slice  { fill: #f5ee31 !important; }
+#vis-pie .active path.slice { fill: #ddd !important; }
+#vis-pie .selected path.slice  { fill: #f5ee31 !important; }
 #vis-pie .selected.core path.slice { fill: #9579b8 !important; }
-#vis-pie .selected-connection path.slice, #vis-pie .active-connected path.slice { stroke: #f5ee31; stroke-width: 2px; }
+#vis-pie .selected-connection path.slice { stroke: #f5ee31; stroke-width: 3px; }
+#vis-pie .active-connected path.slice { fill: #fff !important; }
 
 /* LABELS */
 #vis-pie g.label-box  { display:none; }
@@ -38,7 +40,8 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Bangers', "Helvetica Neue", Helvetica, Ar
 #vis-pie text.instances { display:none; fill: #7B38CF; }
 #vis-pie .selected-connection-core text.instances { display:block;  }
 #vis-pie g.label-box circle.outline { fill: none; }
-#vis-pie .active g.label-box circle.outline, #vis-pie .selected g.label-box circle.outline { fill: #ebe435; }
+#vis-pie .selected g.label-box circle.outline { fill: #ebe435; }
+#vis-pie .active g.label-box circle.outline { fill: #aaa; }
 #vis-pie .selected.core g.label-box circle.outline { fill: #7B38CF; }
 #vis-pie text.name-only { display: none; }
 /*#vis-pie .active-connected text.name-only, #vis-pie .selected-connection text.name-only { display: block; }

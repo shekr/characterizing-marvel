@@ -416,7 +416,7 @@ function parseData(len , data){
 		if (chartSettings.innerChart == 'chords') {
 			getConnectionsData(start);
 		} else {
-			getBarData(start);
+			//getBarData(start);
 		}
 		switch (chartSettings.sorting) {
 			case 'alphabetical':
@@ -492,18 +492,16 @@ $('#modechange').click(function() {
 		$(this).text("Connections Mode");
 	}
 	else { //switch to bars
-		$(this).text(" Bars Mode");
 		chartSettings.innerChart = 'bars';
+		$(this).text(" Bars Mode");
+		//get rid of chord event listeners on slices
+		svg.selectAll('#pieSliceBox > g').on('mouseover.chord', null).on('mouseout.chord', null);
+		//change all slices that are core to selected, ones that are selected-connection or selected-connection-core off
 		$('#pieSliceBox > g.core').attr("class", "selected");
 		$('#pieSliceBox > g.selected-connection').removeAttr("class")
-		if ($('#chordsBox > path.core-selected').size() > 0)
-			$('#chordsBox > path.core-selected').attr("class", $('#chordsBox > path.core-selected').attr("class").replace('core-selected', 'selected'))
 	}
-	if (Object.keys(characterData[0]).indexOf("barchart") < 0 || connectionsData.length < 1) { //only generate random data for new data
-		getData();	
-	} else {
-		getData(dataLength);	
-	}
+	getData();
+	
 })
 
 function findPropName(data, prop, name){
