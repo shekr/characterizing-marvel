@@ -20,6 +20,8 @@ var imageHeight = 60;
 var imageWidth = 60;
 
 var lastSelectedDetailChar;
+var currentDetailChar;
+var currRelCard = {};
 var transitionLong = 1000;
 var transitionShort = 500;
 
@@ -147,7 +149,7 @@ function chordsThreshold(newVal) {
 	allChords
 		.classed('thresh-hide', false);
 	allChords.each(function(d) {
-		if (d.instances <= thresh)
+		if (d.instances <= thresh && !d3.select(this).classed('core'))
 			d3.select(this).classed('thresh-hide', true);
 			svg.select('#sliceGroup-'+d.cid1).classed('selected-connection', false)
 			svg.select('#sliceGroup-'+d.cid2).classed('selected-connection', false)
