@@ -542,11 +542,9 @@ function chordClick(d) {
 								d3.select(this).classed('selected', false);
 						}
 					}
-					
-					var cDetail = relationshipData[0]; //TODO: replace with API call
 					//add rollover detail
 					connSelect.on('mouseover.relationship', function(b) {
-						populateRelationshipCard(nodeSelection.datum().data, connSelect.datum().data, cDetail)
+						populateRelationshipCard(nodeSelection.datum().data, connSelect.datum().data)
 						$('#vis-detail #relationship-detail').addClass("active");						
 					})						
 			})

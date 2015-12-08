@@ -6,8 +6,9 @@ function populateDetailCard(fChar) {
 			var details = data;
 			$('#vis-detail #detail-title').text(fChar.name);
 			$('#vis-detail #title-box h4').remove();
-			if (details.aliases != null && details.aliases != "" && details.aliases.length > 0)
-				$('#vis-detail #title-box').append('<h4>'+details.aliases.join(", ")+'</h4>');		
+			if (details.aliases != null && details.aliases != "") {
+				$('#vis-detail #title-box').append('<h4>'+details.aliases+'</h4>');
+			}
 			$('#vis-detail #bio').text(function() {
 				if (fChar.bio_desc.length > 497) {
 					return fChar.bio_desc.substring(0, 500) + "...";
@@ -31,6 +32,12 @@ function populateDetailCard(fChar) {
 			$('#vis-detail #detail-image').attr('src', function() {
 				return generateImageLink(fChar.image, "portrait_medium")
 			});
+			
+			if (details.url != null && details.url != '')
+				$("#detail-read-more a").attr("href", details.url).text("More about " + fChar.name)
+			else
+				$("#detail-read-more a").text('')
+			
 			$('#vis-detail #detail-affil').text(details.affiliations.join(", "));
 			$('#vis-detail #detail-appear').text(fChar.appearances)
 			//$('#vis-detail #detail-consomm').text(details.consommation);
@@ -45,12 +52,20 @@ function populateDetailCard(fChar) {
 	
 }
 
-function populateRelationshipCard(data1, data2, rInfo) {
-	$('#vis-detail #comic-head').text(data1.name + ' & ' + data2.name)
-	$('#vis-detail #comic-image').attr('src', 'img/' + rInfo.image);
-	$('#vis-detail #comic-link').attr("href", rInfo.link);
-	$('#vis-detail #comic-title').text(rInfo.title);
-	$('#vis-detail #comic-author').text(rInfo.author);
-	$('#vis-detail #comics-more').attr("href", 'comics/id1='+ data1.character_id +'&id2='+ data2.character_id +'&set=all')
+function populateRelationshipCard(data1, data2) {
+	$.post( "http://marvelinfovis.herokuapp.com/api/comic/random/", { firstChar: data1.character_id , secondChar: data2.character_id})
+		.done(function(data) {
+			console.log(data)
+			var rInfo = data;
+			$('#vis-detail #comic-head').text(data1.name + ' & ' + data2.name)
+			$('#vis-detail #comic-image').attr('src',  generateImageLink(rInfo.image, "portrait_medium"));
+			$('#vis-detail #comic-link').attr("href", rInfo.details_url);
+			$('#vis-detail #comic-title').text(rInfo.title);
+			//$('#vis-detail #comic-author').text(rInfo.author);
+		})
 	
+		$('#vis-detail #comics-more').off().on('click', function() {
+			populateRelationshipCard(data1, data2);
+			return false;
+		})
 }

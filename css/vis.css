@@ -110,10 +110,12 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Bangers', "Helvetica Neue", Helvetica, Ar
 #vis-detail #relationship-detail { display:none; }
 #vis-detail #relationship-detail.active { display:block; }
 #vis-detail #comic-head { background-color: #9579b8; color:#fff; margin: 0 0 10px -10px; padding: 10px; width: 400px; }
-#vis-detail #comic-image { height:200px; }
+#vis-detail #comic-image { /*height:200px;*/ }
 #vis-detail #comic { float:left; }
-#vis-detail #comic-info { float:left; margin-left:20px; }
+#vis-detail #comic-info { float:left; margin-left:20px; max-width:250px; }
 #vis-detail #comic-title { padding-left: 0px; }
+#vis-detail #comic-link { display:block; height:150px; width:100px; background-color: #ccc; padding-left: 0px; }
+
 
 /** CONTROLS STYLES **/
 #vis-controls { width: 300px; height: 100%; }

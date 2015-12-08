@@ -158,10 +158,6 @@ function generateImageLink(origLink, newType) {
 
 /**GET DATA **/
 function getData() {
-	/*$.post( "http://marvelinfovis.herokuapp.com/api/comic/random/", { firstChar: 1009405 , secondChar: 1009508})
-	.done(function(data) {
-		console.log(data)
-	})*/
 	
 	$.post( "https://marvelinfovis.herokuapp.com/api/filter/all/", { appearances_min: 50})
 	.done(function(data) {
