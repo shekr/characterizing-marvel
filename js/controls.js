@@ -319,10 +319,10 @@ function updateFilterOptions()
   		switch (key) 
   		{
 			case "Gender":
-			case "Nationality":
-					key_id = key.replace(/\s+/g, '');
+			key_id = key.replace(/\s+/g, '');
 					$('#sortList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"sortradio\"><label>"+key+"</label></li>");
 			    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\">");
+					
 			    	$('#colorList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"colorradio\"><label>"+key+"</label></li>");
 
 				  	$.each(val, function( index, value )
@@ -384,7 +384,7 @@ function updateFilterOptions()
 			case "Number of Appearances":
 					key_id = key.replace(/\s+/g, '');
 					$('#sortList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"sortradio\"><label>"+key+"</label></li>");
-			    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
+			    	//$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\"></ul>");
 			    	$('#colorList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"colorradio\"><label>"+key+"</label></li>");
 
 				  	$.each(val, function( index, value )
@@ -401,13 +401,18 @@ function updateFilterOptions()
 					    			console.log(propVal);
 					    		}
 				  				//$('#sortList'+ key_id).append("<li><div class=\"radio\"> <label> <input type=\"radio\" name = \"sortopt\" class = \"sort " + key_id + " \"id =\""+ propVal +"\">" + propVal + "</label></div></li>");
-					    		$('#filterList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\"  class = \"filter " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
+					    		//$('#filterList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\"  class = \"filter " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
 					    		//$('#colorList'+ key_id).append("<li><div class=\"checkbox\"> <label> <input type=\"checkbox\" class = \"color " + key_id + " \"name =\""+ propVal +"\">" + propVal + "</label></div></li>");
 				  			}
 				  		})
 					    
 					});
 					break;
+			case "Nationality":
+					key_id = key.replace(/\s+/g, '');
+					$('#sortList').append("<li class=\"list-group-item panel-title\"><input type=\"radio\" name=\"sortradio\"><label>"+key+"</label></li>");
+			    	$('#filterList').append("<li><a data-toggle=\"collapse\" data-parent=\"#filterList\" href=\"#filter" + key_id + "\">" + key + "</a><div id=\"filter" + key_id + "\" class=\"panel-collapse collapse\"><div class=\"panel-body\"><ul id=\"filterList" + key_id + "\" class=\"nav fixed-panel\">");
+				break;	
 			default:
 					alert('Error');
 		}

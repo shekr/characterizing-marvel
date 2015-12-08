@@ -8,7 +8,7 @@ var svg = d3.select("#vis-pie");
 
 var bounds = d3.select('#vis-pie').node().getBoundingClientRect();
 
-var width = 950,
+var width = 1050,
     height = 750,
 	radius = Math.min(width, height) / 2;
 
@@ -81,6 +81,17 @@ function midAngle(d){
 svg.select('#pieBox').classed(chartSettings.innerChart, true);
 
 /*** FILTER EXAMPLE IMPLEMENTATION ***/
+$('#getMin').click(function() {
+	getData({ appearances_max: 10});
+	return false;
+})
+
+$('#getMax').click(function() {
+	getData({appearances_min: 30});
+	return false
+})
+
+
 $('#sorter').click(function() {
 	chartSettings.sorting = 'gender';
 	characterData.sort(sortGender)
@@ -129,7 +140,7 @@ $('#mode-changer').click(function() {
 /*** END FILTER EXAMPLE IMPLEMENTATION ***/
 
 /* INIT DATA CALL*/
-getData();
+getData({ appearances_min: 30});
 	
 	
 /* VIS UPDATE FUNCS */
