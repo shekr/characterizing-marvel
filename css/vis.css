@@ -3,17 +3,18 @@
 /**GLOBAL STYLES **/
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size:10px;
 	width: 100%;
 	min-width:1500px;
 	height: 100%;
 	padding: 0;
 	margin: 0;
 }
+h1, h2, h3, h4, h5, h6 { font-family: 'Bangers', "Helvetica Neue", Helvetica, Arial, sans-serif; }
 .component { float:left; }
+#vis-title { margin: 10px 0 12px 0; font-size: 25px; }
+#vis-title img { width: 150px; }
 
 /** PIE STYLES **/
-
 #vis-pie {
 	width: 950px;
 	height: 950px;
@@ -71,7 +72,6 @@ body {
 	display:none;
 	width: 400px;
 	height:100%; 
-	display:none;
 	font-size: 12px;
 	border: 1px solid #eee;
 	padding: 10px;
@@ -95,14 +95,19 @@ body {
 #vis-detail #bio { font-style: 10px; height: 180px; }
 #vis-detail table th { text-align: left; vertical-align: top; padding-right: 30px;}
 
+/*CHARACTER PANE*/
+#vis-detail #detail-title, #vis-detail  #comic-head { background: transparent url("../img/dot.png") repeat right top; }
+#vis-detail #character-detail { margin-bottom: 10px; }
+#vis-detail #detail-title { font-size: 22px; }
+
 /*COMIC PANE*/
 #vis-detail #relationship-detail { display:none; }
 #vis-detail #relationship-detail.active { display:block; }
-#vis-detail #comic-head { background-color: #9579b8; color:#fff; margin: 0 0 10px -5px; }
+#vis-detail #comic-head { background-color: #9579b8; color:#fff; margin: 0 0 10px -10px; padding: 10px; width: 400px; }
 #vis-detail #comic-image { height:200px; }
-
-
-/**ADD MORE STYLES HERE**/
+#vis-detail #comic { float:left; }
+#vis-detail #comic-info { float:left; margin-left:20px; }
+#vis-detail #comic-title { padding-left: 0px; }
 
 /** CONTROLS STYLES **/
 #vis-controls { width: 300px; height: 100%; }

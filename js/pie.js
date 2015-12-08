@@ -139,7 +139,6 @@ function updateChart() {
 	if (chartSettings.innerChart == 'bars')
 		updateBars(characterData);
 	else {
-			getConnectionsFakeData(0); //DELETE WHEN STANDARD CONNECTIONS DONE
 		updateChords(connectionsData);
 	}
 }
@@ -375,7 +374,7 @@ function updateChords(connections) {
 		.append("path")
 		.attr("class", function(d) {
 			var classes = 'chord-'+ Math.min(d.cid1, d.cid2) + ' ' + 'chord-'+ Math.max(d.cid1, d.cid2);
-			if (d.type != "standard")
+			if (d.type != "Standard")
 				classes += ' core';
 			return classes;
 		})

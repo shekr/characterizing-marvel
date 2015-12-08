@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<link type="text/css" rel="stylesheet" href="css/vis.css" />
 <!-- Latest compiled and minified CSS for Bootstrap-->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<link href='https://fonts.googleapis.com/css?family=Bangers' rel='stylesheet' type='text/css'>
 
+<link type="text/css" rel="stylesheet" href="css/vis.css" />
 
 <body>
     <!-- NAV BAR 
@@ -31,8 +32,8 @@
     <div class="container-fluid">
         <div class="row">
             <div id="vis-controls" class="component col-sm-3 col-md-2 sidebar">
-                <h4>Control Panel</h4>
-                <div class="panel">
+                <h1 id="vis-title">Characterizing <img src="img/marvel-logo.png" /></h1>
+                <div class="panel panel-default">
                 	<div class="panel-body">
                         <p>
                             <div class="input-group">
@@ -114,7 +115,7 @@
         </div>
     
     <div id="vis-pie" class="component">
-        <!-- DELETE THIS FILLER WHEN INTEGRATE WITH FILTER COMPONENT -->
+        <!-- DELETE THIS FILLER WHEN INTEGRATE WITH FILTER COMPONENT 
         <div class="btn-group" role="group">
         <button type="button" class="btn btn-default" id="sorter">Sort!</button>
         <button type="button" class="btn btn-default" id="color-coder">Color code!</button> 
@@ -145,23 +146,26 @@
             <table id="detail-table">
                 <tr><th>Affiliation(s)</th><td id="detail-affil"></td></tr>
                 <tr><th># Appearances</th><td id="detail-appear"></td></tr>
-                <tr><th>Consommation</th><td id="detail-consomm"></td></tr>
+                <!--<tr><th>Consommation</th><td id="detail-consomm"></td></tr>-->
                 <tr><th>Gender</th><td id="detail-gender"></td></tr>
                 <tr><th>Nationality</th><td id="detail-nat"></td></tr>
-                <tr><th>Power(s)</th><td id="detail-power"></td></tr>
+                <!--<tr><th>Power(s)</th><td id="detail-power"></td></tr>-->
                 <tr><th>Introduced</th><td id="detail-year"></td></tr>
                 <tr id="detail-connections"><th>Connections</th><td></td></tr>
             </table>
         </div>
         <div id="relationship-detail">
         	<h3 id="comic-head"></h3>
-            <h4 id="comic-title"></h4>
-            <p>By <span id="comic-author"></span></p>
-	    	<p><a href="" id="comic-link">
-                <img id="comic-image" alt="character image" />
-            </a></p>
-            <p><a href="" class="btn btn-default" id="comics-more">More Comics!</a></p>
-        
+        	<div id="comic">
+            	<a href="" id="comic-link">
+                	<img id="comic-image" alt="character image" />
+            	</a>
+            </div>
+            <div id="comic-info">
+                <h3 id="comic-title"></h3>
+                <p>By <span id="comic-author"></span></p>
+                <p><a href="" class="btn btn-default" id="comics-more">More Comics!</a></p>
+            </div>        
         </div>
     </div>
     

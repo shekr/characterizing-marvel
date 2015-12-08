@@ -4,7 +4,7 @@
 */
 
 /* GLOBAL VARS */
-var dataLength = 200;
+var dataLength = 20;
 
 var characterData = [];
 var connectionsData = [];
@@ -155,7 +155,7 @@ function generateImageLink(origLink, newType) {
 	return mainLink + "/" + newType + extension;
 }
 
-/**GET DATA  - NOW USING REAL END POINT**/
+/**GET DATA **/
 function getData(start) {
 	start = start || 0;
 	$.ajax( { url: "js/data-static.js", dataType: "json" } /*https://marvelinfovis.herokuapp.com/api/filter/gender/", { gender: "male"}*/)
@@ -192,7 +192,8 @@ function innerChartDataDoneCallback() {
 		case 'gender':
 			characterData.sort(sortGender);
 		break;
-	}	
+	}
+
 	updateChart();	
 }
 
@@ -207,11 +208,14 @@ function getConnectionsData() {
 			.done(function(data) {
 				returnCount++
 				for (var j = 0; j < data.length; j++) {
-					//only add exisiting connections
-					if (charIndices.indexOf(data[j].cid2) > -1) {
-						data[j].cid1 = parseInt(data[j].cid1)
-						data[j].cid2 = parseInt(data[j].cid2)
-						connectionsData.push(data[j]);	
+					//only add existing connections
+					if (charIndices.indexOf(parseInt(data[j].cid2)) > -1 && parseInt(data[j].cid1) != parseInt(data[j].cid2)) {
+						if (data[j].type == "Family" || (data[j].type == "Standard" && data[j].instances > 1) ) {
+							data[j].cid1 = parseInt(data[j].cid1)
+							data[j].cid2 = parseInt(data[j].cid2)
+							data[j].instances = data[j].instances == null ? 0 : data[j].instances
+							connectionsData.push(data[j]);
+						}
 					}
 				}
 				if (returnCount == dataLength-1)
@@ -220,7 +224,7 @@ function getConnectionsData() {
 	}
 }
 
-/** FAKE DATA GENERATORS **/
+/** FAKE DATA GENERATORS 
 function getConnectionsFakeData(startIndex) {
 	//create some random connection data
 	var connectionTypes = ["family", "standard", "romantic"];
@@ -244,7 +248,7 @@ function getConnectionsFakeData(startIndex) {
 			}
 		}
 	}
-}
+}**/
 
 function getBarData(startIndex) {
 	//create some random barchart data and append to charData
