@@ -4,7 +4,7 @@
 */
 
 /* GLOBAL VARS */
-var dataLength = 20;
+var dataLength = 250;
 
 var characterData = [];
 var connectionsData = [];
@@ -86,7 +86,7 @@ function colCodeGender(d) {
 		if(d.data.gender == val) 
 		{
 			color = colorOptions[index];
-			pinOption(color,d.data.gender);
+			//pinOption(color,d.data.gender);
 			/* change later to add color swatches */
 		}
 	})
@@ -101,7 +101,7 @@ function colCodeNation(d) {
 		if(d.data.gender == val) 
 		{
 			color = colorOptions[index];
-			pinOption(color,d.data.nationality);
+			//pinOption(color,d.data.nationality);
 			/* change later to add color swatches */
 		}
 	})
@@ -118,7 +118,7 @@ function colCodeAppear(d) {
 			if(d.data.appearances >= val && d.data.appearances < appearRange[index+1]) 
 			{
 				color = colorOptions[index];
-				pinOption(color,appearRange[index]);
+				//pinOption(color,appearRange[index]);
 				/* change later to add color swatches */
 			}
 		}
@@ -138,7 +138,7 @@ function colCodeYear(d) {
 			if(d.data.intro_year >= val && d.data.intro_year < yearRange[index+1]) 
 			{
 				color = colorOptions[index];
-				pinOption(color,yearRange[index]);
+				//pinOption(color,yearRange[index]);
 				/* change later to add color swatches */
 			}
 		}
@@ -160,10 +160,17 @@ function generateImageLink(origLink, newType) {
 function getData() {
 	
 	$.post( "https://marvelinfovis.herokuapp.com/api/filter/all/", { appearances_min: 50})
+	.fail(function() {
+    	console.log('failed to load, accessing local')
+  	})
 	.done(function(data) {
 		//console.log(data)
-		characterData = data.characters//.slice(0, dataLength);
+		if (data.characters.length >= dataLength)
+			characterData = data.characters.slice(0, dataLength);
+		else
+			characterData = data.characters
 		dataLength = characterData.length;
+		console.log(characterData)
 		console.log('loading '+dataLength+' characters')
 		/* CREATE THE DATA FOR SEARCH */
 		autoSuggestData = [];
@@ -175,11 +182,13 @@ function getData() {
 		}
 		$( "#search" ).autocomplete( "option", "source", autoSuggestData );
 		
-		if (chartSettings.innerChart == 'chords') {
+		/*if (chartSettings.innerChart == 'chords') {
 			getConnectionsData();
 		} else {
 			innerChartDataDoneCallback()	
-		}
+		}*/
+		//populate whole chart
+		getConnectionsData();
 		filterData = getFilterData();
 		
 	})
@@ -212,6 +221,9 @@ function getConnectionsData() {
 	for (var i = 0; i < dataLength; i++) {
 		var currChar = characterData[i];
 		$.post( "https://marvelinfovis.herokuapp.com/api/connections/", { character_id: currChar.character_id})
+			.fail(function() {
+    			console.log('failed to load, accessing local')
+  			})
 			.done(function(data) {
 				returnCount++
 				for (var j = 0; j < data.length; j++) {

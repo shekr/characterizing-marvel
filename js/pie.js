@@ -759,6 +759,7 @@ function updateBars(data) {
 	
 	/* Pie Events */
 	var sliceParents = svg.selectAll('g#pieSliceBox > g');
+	sliceParents.on('click.chord', null) //turn off chord clicking
 	
 	sliceParents.on('mouseover.bars', function(d) {
 		svg.select('#bar-'+d.data.character_id).classed('active', true);

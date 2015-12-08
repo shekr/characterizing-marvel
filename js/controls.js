@@ -510,8 +510,8 @@ $('#modechange').click(function() {
 		$('#pieSliceBox > g.core').attr("class", "selected");
 		$('#pieSliceBox > g.selected-connection').removeAttr("class")
 	}
-	getData();
-	
+	//getData(); no longer needed bc updating all data on first getdata
+	innerChartDataDoneCallback();
 })
 
 function findPropName(data, prop, name){
