@@ -4,7 +4,7 @@
 */
 
 /* GLOBAL VARS */
-var dataLength = 200;
+var dataLength = 20;
 
 var characterData = [];
 var connectionsData = [];
@@ -20,6 +20,7 @@ var colorOptions =['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','
 var appearRange =[];
 var yearRange =[];
 var autoSuggestData = [];
+var chordThreshScale;
 
 /* SORT AND COLOR-CODE FUNCS */
 function sortAlpha(a,b) {  
@@ -156,13 +157,19 @@ function generateImageLink(origLink, newType) {
 }
 
 /**GET DATA **/
-function getData(start) {
-	start = start || 0;
-	$.ajax( { url: "js/data-static.js", dataType: "json" } /*https://marvelinfovis.herokuapp.com/api/filter/gender/", { gender: "male"}*/)
+function getData() {
+	/*$.post( "http://marvelinfovis.herokuapp.com/api/comic/random/", { firstChar: 1009405 , secondChar: 1009508})
+	.done(function(data) {
+		console.log(data)
+	})*/
+	
+	$.post( "https://marvelinfovis.herokuapp.com/api/filter/all/", { appearances_min: 50})
 	.done(function(data) {
 		//console.log(data)
-		characterData = data.slice(0,dataLength);
-		/* CREATE THE DATA FOR SEARCH*/
+		characterData = data.characters//.slice(0, dataLength);
+		dataLength = characterData.length;
+		console.log('loading '+dataLength+' characters')
+		/* CREATE THE DATA FOR SEARCH */
 		autoSuggestData = [];
 		for (var i = 0; i < dataLength; i++) {
 			var searchItem = {}
@@ -179,7 +186,7 @@ function getData(start) {
 		}
 		filterData = getFilterData();
 		
-	})	
+	})
 }
 
 function innerChartDataDoneCallback() {
@@ -192,6 +199,11 @@ function innerChartDataDoneCallback() {
 			characterData.sort(sortGender);
 		break;
 	}
+	//only when chords created recalc threshold
+	var chordsRange = d3.extent(connectionsData, function(d) { return d.instances  } )
+	chordThreshScale = d3.scale.linear()
+		.domain([0,100])
+		.range(chordsRange)
 
 	updateChart();	
 }
@@ -222,49 +234,6 @@ function getConnectionsData() {
 			})		
 	}
 }
-
-/** FAKE DATA GENERATORS 
-function getConnectionsFakeData(startIndex) {
-	//create some random connection data
-	var connectionTypes = ["family", "standard", "romantic"];
-	if (startIndex >= 0) {
-		for (var i = startIndex; i < dataLength; i++) {
-			for (var j = 0; j <	dataLength; j++) {
-				var valR = Math.floor(Math.random()*dataLength);
-				if (valR % 200 == 0) {
-					var charConnections = {};
-					charConnections.cid1 = characterData[i].character_id;
-					var indexR = Math.floor(Math.random()*dataLength);
-					while (indexR == i) {
-						indexR = Math.floor(Math.random()*dataLength);
-					}
-					charConnections.cid2 = characterData[indexR].character_id;
-					var indexConn = Math.floor(Math.random()*connectionTypes.length);
-					charConnections.type = "standard" //connectionTypes[indexConn];
-					charConnections.instances = Math.ceil(Math.random()*50);
-					connectionsData.push(charConnections);	
-				}
-			}
-		}
-	}
-}**/
-
-/*
-function getBarData(startIndex) {
-	//create some random barchart data and append to charData
-	for (var i = startIndex; i < dataLength; i++) {
-		var currChar = characterData[i];
-		currChar.barchart = {};
-		currChar.barchart.appearances = Math.floor(Math.random()*10000);
-		currChar.barchart.aliases = Math.floor(Math.random()*10)
-		currChar.barchart.connections = Math.floor(Math.random()*500);
-		currChar.barchart.affilations = Math.floor(Math.random() * 20);
-		currChar.barchart.powers = Math.floor(Math.random()*10);
-		characterData[i] = currChar;
-	}
-	innerChartDataDoneCallback()
-	
-}*/
 
 function getFilterData() {
 	//console.log("Getting updated list of available control options. List of Nationalities	");

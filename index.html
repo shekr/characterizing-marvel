@@ -35,14 +35,16 @@
                 <h1 id="vis-title">Characterizing <img src="img/marvel-logo.png" /></h1>
                 <div class="panel panel-default">
                 	<div class="panel-body">
-                        <p>
-                            <div class="input-group">
-                                   <input id="search" type="search" class="form-control" placeholder="Search your hero or villain..." aria-describedby="searchClear">
-                                   <span id="searchClear" class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-                            </div>
-                        </p>
+                        <div class="input-group" style="margin-bottom:10px;">
+                               <input id="search" type="search" class="form-control" placeholder="Search your hero or villain..." aria-describedby="searchClear">
+                               <span id="searchClear" class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                        </div>
                         <p><button type="button" class="btn btn-default" id="clearer">Clear Selections</button></p>
-                        <p><button id="modechange" type="button" class="btn btn-primary">Connections Mode</button>
+                        <p><button id="modechange" type="button" class="btn btn-primary">Switch to Bars</button>
+                        <div id="sliderBox">
+                            <p style="font-size:12px;">Connection threshold (0 to core-only):</p>
+                            <div id="slider"></div>
+                        </div>
                         <p>
                         <div class="btn-group" role="group" aria-label="...">
                             <button id="sortAsc" type="button" class="btn btn-default active">

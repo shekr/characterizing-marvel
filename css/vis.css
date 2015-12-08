@@ -27,11 +27,11 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Bangers', "Helvetica Neue", Helvetica, Ar
 
 /* SLICES */
 #vis-pie path.slice { stroke: #ccc; stroke-width: 1px; }
-#vis-pie .active path.slice { fill: #ddd !important; }
+#vis-pie .active path.slice { fill: #deddbf !important; }
 #vis-pie .selected path.slice  { fill: #f5ee31 !important; }
 #vis-pie .selected.core path.slice { fill: #9579b8 !important; }
 #vis-pie .selected-connection path.slice { stroke: #f5ee31; stroke-width: 3px; }
-#vis-pie .active-connected path.slice { fill: #fff !important; }
+#vis-pie .active-connected path.slice { fill: #eee !important; }
 
 /* LABELS */
 #vis-pie g.label-box  { display:none; }
@@ -61,6 +61,9 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Bangers', "Helvetica Neue", Helvetica, Ar
 #vis-pie #chordsBox path.active, #vis-pie #chordsBox path.selected, #vis-pie #chordsBox path.core-selected { display:block; }
 #vis-pie #chordsBox path.selected { stroke: #000; }
 #vis-pie #chordsBox path.core-selected { stroke: #7B38CF; }
+
+#vis-pie #chordsBox path.thresh-hide, #vis-pie #chordsBox path.thresh-hide.selected { display:none; }
+#vis-pie #chordsBox path.core.thresh-hide.selected, #vis-pie #chordsBox path.core.thresh-hide.core-selected { display: block; }
 
 /* BARS */
 #vis-pie #barsBox circle.refLine { stroke: #cdf4ff; stroke-width: 1px; fill: none; }

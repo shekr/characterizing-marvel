@@ -97,6 +97,14 @@ $( document ).ready(function() {
 		$('#vis-detail').removeClass("viewable");
 	})
 	
+	/* CONNECTIONS SLIDER */
+	$( "#slider" ).slider({
+		change: function(event, ui) { 
+        	chordsThreshold(ui.value) 
+    	} 	
+	});
+	
+	
 	/* Sorting radio button workaround */ 
 	$('.radClick').click(function(){
 		//console.log("click")
@@ -489,11 +497,13 @@ $('#modechange').click(function() {
 	if (chartSettings.innerChart == 'bars') { 
 		//switch to chords
 		chartSettings.innerChart = 'chords';
-		$(this).text("Connections Mode");
+		$(this).text(" Switch to Bars");
+		$('#sliderBox').show();
 	}
 	else { //switch to bars
 		chartSettings.innerChart = 'bars';
-		$(this).text(" Bars Mode");
+		$(this).text(" Switch to Relationships");
+		$('#sliderBox').hide()
 		//get rid of chord event listeners on slices
 		svg.selectAll('#pieSliceBox > g').on('mouseover.chord', null).on('mouseout.chord', null);
 		//change all slices that are core to selected, ones that are selected-connection or selected-connection-core off

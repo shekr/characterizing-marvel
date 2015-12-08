@@ -56,8 +56,8 @@ var arcLine = d3.svg.line()
 	
 var chordBufferScale = d3.scale.linear()
 	.domain([0, 2*Math.PI])
-	.range([.85, 0.65])
-	
+	.range([.85, 0.65])	
+
 svg.attr("x", (bounds.width - width)/2).attr("y", (bounds.height-height)/2)
 svg.select("g#pieBox").attr("transform", "translate(" + bounds.width/2 + "," + bounds.height/ 2 + ")");
 
@@ -138,6 +138,20 @@ function updateChart() {
 	else {
 		updateChords(connectionsData);
 	}
+}
+
+function chordsThreshold(newVal) {
+	var thresh = chordThreshScale(newVal)
+	var allChords = svg.selectAll('#chordsBox path');
+	
+	allChords
+		.classed('thresh-hide', false);
+	allChords.each(function(d) {
+		if (d.instances <= thresh)
+			d3.select(this).classed('thresh-hide', true);
+			svg.select('#sliceGroup-'+d.cid1).classed('selected-connection', false)
+			svg.select('#sliceGroup-'+d.cid2).classed('selected-connection', false)
+	})
 }
 
 /******** PIE ***********
@@ -438,10 +452,12 @@ function updateChords(connections) {
 			$('#vis-detail #relationship-detail').removeClass('active');
 		
 		svg.select('#chordsBox').selectAll('.chord-' + charID).each(function(nodeData) {
-			d3.select(this).classed('active', true)
-			var connectedCharID = nodeData.cid1 == charID ? nodeData.cid2 : nodeData.cid1
-			var connSelect = svg.select('#sliceGroup-' + connectedCharID)
-			connSelect.classed('active-connected', true);
+			if (!d3.select(this).classed('thresh-hide')) {
+				d3.select(this).classed('active', true)
+				var connectedCharID = nodeData.cid1 == charID ? nodeData.cid2 : nodeData.cid1
+				var connSelect = svg.select('#sliceGroup-' + connectedCharID)
+				connSelect.classed('active-connected', true);
+			}
 		})
 	})
 	
@@ -488,7 +504,7 @@ function chordClick(d) {
 		var coreStateNow = nodeSelection.classed('core');
 		var charID = d.data.character_id;
 				
-		var connectedChords = svg.select('#chordsBox').selectAll('.chord-' + charID);
+		var connectedChords = svg.select('#chordsBox').selectAll('.chord-' + charID).filter(function(d, i) { return !d3.select(this).classed('thresh-hide')  });
 		
 		if (selectedStateNow) { //now we're selected
 			connectedChords.each(function(nodeData) {
