@@ -1,3 +1,5 @@
+{% load staticfiles %}
+
 <!DOCTYPE html>
 <meta charset="utf-8">
 <!-- Latest compiled and minified CSS for Bootstrap-->
@@ -6,7 +8,9 @@
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 <link href='https://fonts.googleapis.com/css?family=Bangers' rel='stylesheet' type='text/css'>
 
-<link type="text/css" rel="stylesheet" href="css/vis.css" />
+
+<link rel="stylesheet" href="{% static "css/vis.css"%}" />
+<!-- <link type="text/css" rel="stylesheet" href="css/vis.css" /> -->
 
 <body>
     <!-- NAV BAR 
@@ -32,7 +36,7 @@
     <div class="container-fluid">
         <div class="row">
             <div id="vis-controls" class="component col-sm-3 col-md-2 sidebar">
-                <h1 id="vis-title">Characterizing <img src="img/marvel-logo.png" /></h1>
+                <h1 id="vis-title">Characterizing <img src={% static "img/marvel-logo.png"%}/></h1>
                 <div class="panel panel-default">
                 	<div class="panel-body">
                         <div class="input-group" style="margin-bottom:10px;">
@@ -182,13 +186,13 @@
     <!-- Latest compiled and minified Bootstrap JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <script src="js/fake-dataB.js"></script>
-    <script src="js/fake-data-bars.js"></script>
+    <script src={% static "js/fake-dataB.js"%}></script>
+    <script src={% static "js/fake-data-bars.js"%}></script>
 
-    <script src="js/global.js"></script>
+    <script src={% static "js/global.js"%}></script>
     <!-- COMPONENT SCRIPTS COME AFTER GLOBAL.JS -->
-    <script src="js/pie.js"></script>
-    <script src="js/detail.js"></script>
-    <script src="js/controls.js"></script>
+    <script src={% static "js/pie.js"%}></script>
+    <script src={% static "js/detail.js"%}></script>
+    <script src={% static "js/controls.js"%}></script>
 
 </body>
