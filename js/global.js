@@ -157,20 +157,20 @@ function generateImageLink(origLink, newType) {
 }
 
 /**GET DATA **/
-function getData(params) {
+function getData() {
 	
-	$.post( "https://marvelinfovis.herokuapp.com/api/filter/appearances/", params )
+	$.post( "https://marvelinfovis.herokuapp.com/api/filter/all/", { appearances_min: 50})
 	.fail(function() {
     	console.log('failed to load, accessing local')
   	})
 	.done(function(data) {
 		//console.log(data)
-		if (data.length >= dataLength)
-			characterData = data.slice(0, dataLength);
+		if (data.characters.length >= dataLength)
+			characterData = data.characters.slice(0, dataLength);
 		else
-			characterData = data
+			characterData = data.characters
 		dataLength = characterData.length;
-		//console.log(characterData)
+		console.log(characterData)
 		console.log('loading '+dataLength+' characters')
 		/* CREATE THE DATA FOR SEARCH */
 		autoSuggestData = [];
