@@ -59,7 +59,7 @@ function populateRelationshipCard(data1, data2, origin) {
 	console.log(data1.character_id + ' ' + data2.character_id)
 	console.log(currRelCard.cid1 + ' ' + currRelCard.cid2)
 	if (origin == "new" || currRelCard.cid1 != data1.character_id || currRelCard.cid2 != data2.character_id) { 
-		$.post( "http://marvelinfovis.herokuapp.com/api/comic/random/", { firstChar: data1.character_id , secondChar: data2.character_id})
+		$.post( "https://marvelinfovis.herokuapp.com/api/comic/random/", { firstChar: data1.character_id , secondChar: data2.character_id})
 			.done(function(data) {
 				console.log(currRelCard.cid1 + ' ' + currRelCard.cid2)
 				console.log(data)
