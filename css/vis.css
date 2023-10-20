@@ -25,6 +25,14 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Bangers', "Helvetica Neue", Helvetica, Ar
 }
 #vis-pie text { font-size: 11px; dominant-baseline: middle; }
 
+/* LOADER BAR */
+#vis-loader-box {
+	margin-top: 25%;
+	margin-left:auto;
+	margin-right: auto;
+	width: 50%;
+}
+
 /* SLICES */
 #vis-pie path.slice { stroke: #ccc; stroke-width: 1px; }
 #vis-pie .active path.slice { fill: #deddbf !important; }

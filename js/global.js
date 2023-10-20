@@ -22,6 +22,9 @@ var yearRange =[];
 var autoSuggestData = [];
 var chordThreshScale;
 
+var loaderSayings = ['Recharging arc reactor', 'Activating Bifrost', 'Powering on Cerebro', 'Deploying Agents', 'Upgrading web shooters', 'Loading up Fantasticar', 'Injecting adamantium'];
+var loaderSayingsInterval;
+
 /* SORT AND COLOR-CODE FUNCS */
 function sortAlpha(a,b) {  
 	if (a.name > b.name)
@@ -215,6 +218,7 @@ function innerChartDataDoneCallback() {
 
 function getConnectionsData() {
 	connectionsData = [];
+	loaderSayingsInterval = setInterval(updateLoaderSaying, 2500);
 	var charIndices = characterData.map(function(x) {return x.character_id; });
 	//console.log(charIndices)
 	var returnCount = 0;
@@ -225,7 +229,13 @@ function getConnectionsData() {
     			console.log('failed to load, accessing local')
   			})
 			.done(function(data) {
-				returnCount++
+				returnCount++;
+				
+				//update loader bar
+				var percentDone = (returnCount/dataLength)*100;
+				$('#vis-loader-bar').css('width', percentDone+'%');
+				$('#vis-loader-bar span').text(percentDone + '% complete');
+				
 				for (var j = 0; j < data.length; j++) {
 					//only add existing connections
 					if (charIndices.indexOf(parseInt(data[j].cid2)) > -1 && parseInt(data[j].cid1) != parseInt(data[j].cid2)) {
@@ -237,10 +247,18 @@ function getConnectionsData() {
 						}
 					}
 				}
-				if (returnCount == dataLength-1)
-					innerChartDataDoneCallback()
+				if (returnCount == dataLength-1) {
+					clearInterval(loaderSayingsInterval);
+					$('#vis-loader-box').remove();
+					innerChartDataDoneCallback();
+				}
 			})		
 	}
+}
+
+function updateLoaderSaying() {
+	var rand = Math.floor(Math.random()	* loaderSayings.length);
+	$('#loader-sayings').text(loaderSayings[rand] + '...');
 }
 
 function getFilterData() {
